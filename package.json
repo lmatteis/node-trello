@@ -1,0 +1,16 @@
+{
+  "name" : "node-trello"
+, "description" : "Node wrapper for Trello's HTTP API."
+, "tags" : ["http", "trello", "api", "web-service"]
+, "version" : "0.0.1"
+, "author" : "Luca Matteis <lmatties@gmail.com>"
+, "repository" :
+  { "type" : "git"
+  , "url" : "http://github.com/lmatteis/node-trello.git"
+  }
+, "bugs" :
+  { "url" : "http://github.com/lmatteis/node-trello/issues" }
+, "engines" : ["node >= 0.6.6"]
+, "main" : "./main"
+,"scripts": { "test": "node tests.js" }
+}
