@@ -35,12 +35,14 @@ trello.api = function(apiCall, callback) {
 trello.get = function(org, callback) {
   trello.api("/" + org, function(data) {
     var len = data.boards.length;
+    var done = 0;
+    var ret = [];
     data.boards.forEach(function(i, idx) {
       var id = i._id;
-      var ret = [];
       trello.api("/board/" + id + "/current", function(data) {
+        done++;
         ret.push(data.boards[0]);
-        if(idx === (len-1)) { // last
+        if(done === len) { // last
           callback(ret);
         }
       });

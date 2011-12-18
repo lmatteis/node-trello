@@ -13,7 +13,7 @@ var tests = {
   },
   getEssentialStructure: function() {
     trello.get("grinfo", function(data) {
-      console.log(data[0]);
+      console.log(data);
     });
   }
 };
