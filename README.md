@@ -3,7 +3,7 @@ Node wrapper for Trello's HTTP API.
 
 ## Example
 
-    require("node-trello");
+    var trello = require("node-trello");
 
     trello.key = "<your key>";
     trello.token = "<token>";
