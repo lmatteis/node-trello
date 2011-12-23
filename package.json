@@ -3,7 +3,7 @@
 , "description" : "Node wrapper for Trello's HTTP API."
 , "tags" : ["http", "trello", "api", "web-service"]
 , "version" : "0.0.1"
-, "author" : "Luca Matteis <lmatties@gmail.com>"
+, "author" : "Luca Matteis <lmatteis@gmail.com>"
 , "repository" :
   { "type" : "git"
   , "url" : "http://github.com/lmatteis/node-trello.git"
