@@ -17,7 +17,10 @@ trello.params = function(args) {
   return str;
 };
 
-trello.api = function(apiCall, callback) {
+trello.api = function(apiCall, args, callback) {
+  callback = callback || args;
+  args = args || {};
+  
   var host = "trello.com";
   var options = {
     host: host,
@@ -26,7 +29,6 @@ trello.api = function(apiCall, callback) {
     method: 'GET'
   };
 
-  var args = {};
   if(trello.key) {
     args["key"] = trello.key;
   }

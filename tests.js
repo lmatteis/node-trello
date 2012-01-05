@@ -14,6 +14,15 @@ var tests = {
       if(err) throw err;
       assert.ok(data.length > 0);
     });
+  },
+  getBoardsWithArgs: function() {
+    var args = { fields: "name,desc" };
+    trello.api("/1/organization/grinfo/boards/all", args, function(err, data) {
+      if(err) throw err;
+      assert.ok(data.length > 0);
+      // we asked for two fields, but id is always returned, so we look for 3
+      assert.equal(3, Object.keys(data[0]).length)
+    });
   }
 };
 
