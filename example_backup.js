@@ -6,7 +6,7 @@ var fs = require('fs');
 var Trello = require("./main.js");
 var t = new Trello(app_key, oauth_access_token);
 
-t.api("/1/organization/" + organization + "/boards/all", function(err, data) {
+t.get("/1/organization/" + organization + "/boards/all", function(err, data) {
   if(err) throw err;
   for(board in data) {
       var board_id = data[board].id;
