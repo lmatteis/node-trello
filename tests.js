@@ -15,14 +15,14 @@ var tests = {
     assert.equal(query, expected, query + " should be " + expected);
   },
   getBoards: function() {
-    t.api("/1/organization/"+org+"/boards/all", function(err, data) {
+    t.get("/1/organization/"+org+"/boards/all", function(err, data) {
       if(err) throw err;
       assert.ok(data.length > 0);
     });
   },
   getBoardsWithArgs: function() {
     var args = { fields: "name,desc" };
-    t.api("/1/organization/"+org+"/boards/all", args, function(err, data) {
+    t.get("/1/organization/"+org+"/boards/all", args, function(err, data) {
       if(err) throw err;
       assert.ok(data.length > 0);
       // we asked for two fields, but id is always returned, so we look for 3

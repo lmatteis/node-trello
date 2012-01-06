@@ -7,7 +7,7 @@ var fs = require('fs');
 var Trello = require("./main.js");
 var t = new Trello(app_key, oauth_access_token);
 
-t.api("/1/organization/" + organization + "/boards/all", function(err, data) {
+t.get("/1/organization/" + organization + "/boards/all", function(err, data) {
     if(err) throw err;
     for (var i=0; i < data.length; i++) {
         backupCards(data[i].id, data[i].name);
@@ -15,7 +15,7 @@ t.api("/1/organization/" + organization + "/boards/all", function(err, data) {
 });
 
 function backupCards(board_id, board_name) {
-    t.api('/1/board/' + board_id + '/cards/all', function(err, data) {
+    t.get('/1/board/' + board_id + '/cards/all', function(err, data) {
         if(err) throw err;
         var filename = board_name + " - " + new Date().toString()  + ".json";
         console.log('Backing up ' + data.length + ' cards for board "' + board_name + '"');

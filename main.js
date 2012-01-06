@@ -3,6 +3,7 @@ var https = require('https');
 var trello = function(key, token) {
   this.key = key;
   this.token = token;
+  this.host = "api.trello.com";
 };
 
 trello.prototype.params = function(args) {
@@ -18,7 +19,7 @@ trello.prototype.params = function(args) {
   return str;
 };
 
-trello.prototype.api = function(apiCall, args, callback) {
+trello.prototype.get = trello.prototype.api = function(apiCall, args, callback) {
   callback = callback || args;
   args = args || {};
   
