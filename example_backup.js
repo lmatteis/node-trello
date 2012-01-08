@@ -1,30 +1,14 @@
+var TrelloBackup = require("./backup.js");
+
+
+//config
 var app_key = '<app_key>';
 var oauth_access_token = '<oauth_access_token>';
 var organization = '<organization>';
+var data_type = 'csv'; //json, csv
 
-var fs = require('fs');
-var Trello = require("./main.js");
-var t = new Trello(app_key, oauth_access_token);
+//usage
+var tb = new TrelloBackup(app_key, oauth_access_token, organization, data_type);
+tb.backupOrganization();
 
-t.get("/1/organization/" + organization + "/boards/all", function(err, data) {
-    if(err) throw err;
-    for (var i=0; i < data.length; i++) {
-        backupLists(data[i].id, data[i].name);
-    }
-});
 
-function backupLists(board_id, board_name) {
-    t.get('/1/board/' + board_id + '/lists/all', function(err, data) {
-        if(err) throw err;
-        var filename = board_name + " - " + new Date().toString() + ".json";
-        console.log('Backing up ' + data.length + ' cards for board "' + board_name + '"');
-
-        fs.writeFile(filename, JSON.stringify(data), function(err) {
-            if(err) {
-                console.log(err);
-            } else {
-                console.log("Saved to " + filename);
-            }
-        });
-    });
-}
