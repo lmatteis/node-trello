@@ -9,7 +9,7 @@ Node wrapper for Trello's HTTP API.
 
 * With these values [visit this other link](https://trello.com/1/connect?key=<PUBLIC_KEY>&name=MyApp&response_type=token) (Replacing, of course &lt;PUBLIC_KEY&gt; for the public key value obtained).
 
-* Authorice MyApp to read the application
+* Authorize MyApp to read the application
 
 * MyApp now have the token.
 
