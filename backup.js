@@ -57,25 +57,56 @@ trello_backup.prototype.writeCards = function(board_name, data) {
 trello_backup.prototype.createCSV = function(data) {
     var csv = "";
     //title
-    var card = data[0];
-    for(key in card) {
-        csv += key + ", ";
+    var list = data[0];
+    for(key in list) {
+			if (key != "cards") {
+				csv += key + ", ";
+			}   
     }
+		// ensure the card keys are always at the end
+		for(key2 in list.cards[0]) {
+			csv += key2 + ", ";					
+		}
     csv = csv.substr(0, csv.length-2);
     csv += '\n';
 
     //data
+		// builds the list csv piece and then prepends this to every card entry
     for (var i=0; i < data.length; i++) {
-        var card = data[i];
-        for(key in card) {
-            var prop = card[key].toString();
+        var list = data[i];
+				var list_csv = ""
+        for(key in list) {
+					if (key != "cards") {
+            var prop = list[key].toString();
             prop = prop.replace(/"/g,' '); // remove "
             prop = prop.replace(/,/g,' '); // remove ,
             prop = prop.replace(/\n/g, ' '); // remove new lines
-            csv += prop + ", ";
-        }
-        csv = csv.substr(0, csv.length-2);
-        csv += '\n';
+            list_csv += prop + ", ";
+					};
+        };
+
+				// make sure not to add an extra field
+        list_csv = list_csv.substr(0, list_csv.length-2);
+
+				// card data or dump list information if no cards
+				if (list.cards != null) {
+					for (var j=0; j < list.cards.length; j++) {
+						csv += list_csv + ",";
+						var card = list.cards[j]
+						for(key in card) {
+							var prop = card[key].toString();
+							prop = prop.replace(/"/g,' '); // remove "
+							prop = prop.replace(/,/g,' '); // remove ,
+							prop = prop.replace(/\n/g, ' '); // remove new lines
+							csv += prop + ", ";
+						};
+		        csv = csv.substr(0, csv.length-2);
+		        csv += '\n';
+					};      
+				} else {
+					csv += list_csv;
+	        csv += '\n';						
+				};
     };
     return csv;
 }
