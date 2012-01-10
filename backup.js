@@ -80,13 +80,11 @@ trello_backup.prototype.createCSVData = function(data) {
     // builds the list csv piece and then prepends this to every card entry
     for (var i=0; i < data.length; i++) {
         var list = data[i];
-        var list_csv = ""
+        var list_csv = "";
         for(key in list) {
             if (key != "cards" && !this.shouldBeIgnored(key)) {
                 var prop = list[key].toString();
-                prop = prop.replace(/"/g,' '); // remove "
-                prop = prop.replace(/,/g,' '); // remove ,
-                prop = prop.replace(/\n/g, ' '); // remove new lines
+                prop = convertToCSVField(prop);
                 list_csv += prop + ", ";
             };
         };
@@ -102,9 +100,7 @@ trello_backup.prototype.createCSVData = function(data) {
                 for(key in card) {
                     if(!this.shouldBeIgnored('card-'+key)) {
                         var prop = card[key].toString();
-                        prop = prop.replace(/"/g,' '); // remove "
-                        prop = prop.replace(/,/g,' '); // remove ,
-                        prop = prop.replace(/\n/g, ' '); // remove new lines
+                        prop = convertToCSVField(prop);
                         csv += prop + ", ";
                     }
                 };
@@ -121,6 +117,13 @@ trello_backup.prototype.createCSVData = function(data) {
 
 trello_backup.prototype.shouldBeIgnored = function(attribute) {
     return this.ignored_attributes.indexOf(attribute) > -1;
+}
+//todo: preserve quotes, commata and new lines. use csv-standard
+function convertToCSVField(field) {
+    field = field.replace(/"/g,' '); // remove "
+    field = field.replace(/,/g,' '); // remove ,
+    field = field.replace(/\n/g, ' '); // remove new lines
+    return field;
 }
 
 exports = module.exports = trello_backup;
