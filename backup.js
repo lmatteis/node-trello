@@ -40,7 +40,8 @@ trello_backup.prototype.writeCards = function(board_name, data) {
 
     var string;
     if(this.data_type == 'csv') {
-        string = this.createCSV(data);
+        string = this.createCSVTitle(data);
+        string += this.createCSVData(data);
     }else {
         string = JSON.stringify(data);
     }
@@ -54,9 +55,9 @@ trello_backup.prototype.writeCards = function(board_name, data) {
     });
 }
 
-trello_backup.prototype.createCSV = function(data) {
+//todo: fix if first list doesn't have a card
+trello_backup.prototype.createCSVTitle = function(data) {
     var csv = "";
-    //title
     var list = data[0];
     for(key in list) {
         if (key != "cards" && !this.shouldBeIgnored(key)) {
@@ -71,8 +72,11 @@ trello_backup.prototype.createCSV = function(data) {
     }
     csv = csv.substr(0, csv.length-2);
     csv += '\n';
+    return csv;
+}
 
-    //data
+trello_backup.prototype.createCSVData = function(data) {
+    var csv = "";
     // builds the list csv piece and then prepends this to every card entry
     for (var i=0; i < data.length; i++) {
         var list = data[i];
