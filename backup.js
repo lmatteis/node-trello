@@ -1,10 +1,11 @@
 var Trello = require("./main.js");
 var fs = require('fs');
 
-var trello_backup = function(app_key, oauth_access_token, organization, data_type) {
+var trello_backup = function(app_key, oauth_access_token, organization, data_type, ignored_attributes) {
     this.organization = organization;
     this.trello = new Trello(app_key, oauth_access_token);
     this.data_type = data_type; //json, csv
+    this.ignored_attributes = ignored_attributes;
 }
 
 trello_backup.prototype.backupOrganization = function() {
@@ -58,13 +59,15 @@ trello_backup.prototype.createCSV = function(data) {
     //title
     var list = data[0];
     for(key in list) {
-        if (key != "cards") {
+        if (key != "cards" && !this.shouldBeIgnored(key)) {
             csv += key + ", ";
         }   
     }
     // ensure the card keys are always at the end
     for(key2 in list.cards[0]) {
-        csv += key2 + ", ";
+        if(!this.shouldBeIgnored('card-'+ key2)) {
+            csv += 'card-' + key2 + ", ";
+        }
     }
     csv = csv.substr(0, csv.length-2);
     csv += '\n';
@@ -75,7 +78,7 @@ trello_backup.prototype.createCSV = function(data) {
         var list = data[i];
         var list_csv = ""
         for(key in list) {
-            if (key != "cards") {
+            if (key != "cards" && !this.shouldBeIgnored(key)) {
                 var prop = list[key].toString();
                 prop = prop.replace(/"/g,' '); // remove "
                 prop = prop.replace(/,/g,' '); // remove ,
@@ -91,13 +94,15 @@ trello_backup.prototype.createCSV = function(data) {
         if (list.cards != null) {
             for (var j=0; j < list.cards.length; j++) {
                 csv += list_csv + ",";
-                var card = list.cards[j]
+                var card = list.cards[j];
                 for(key in card) {
-                    var prop = card[key].toString();
-                    prop = prop.replace(/"/g,' '); // remove "
-                    prop = prop.replace(/,/g,' '); // remove ,
-                    prop = prop.replace(/\n/g, ' '); // remove new lines
-                    csv += prop + ", ";
+                    if(!this.shouldBeIgnored('card-'+key)) {
+                        var prop = card[key].toString();
+                        prop = prop.replace(/"/g,' '); // remove "
+                        prop = prop.replace(/,/g,' '); // remove ,
+                        prop = prop.replace(/\n/g, ' '); // remove new lines
+                        csv += prop + ", ";
+                    }
                 };
                 csv = csv.substr(0, csv.length-2);
                 csv += '\n';
@@ -108,6 +113,10 @@ trello_backup.prototype.createCSV = function(data) {
         };
     };
     return csv;
+}
+
+trello_backup.prototype.shouldBeIgnored = function(attribute) {
+    return this.ignored_attributes.indexOf(attribute) > -1;
 }
 
 exports = module.exports = trello_backup;
