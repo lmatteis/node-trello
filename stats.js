@@ -1,33 +1,31 @@
 var Trello = require("./main.js");
 var fs = require('fs');
 
-var trello_stats = function(app_key, oauth_access_token, organization) {
-    this.organization = organization;
+var trello_stats = function(app_key, oauth_access_token, board_id) {
+    this.board_id = board_id;
     this.trello = new Trello(app_key, oauth_access_token);
 }
 
 trello_stats.prototype.createStats = function() {
     var self = this;
-    this.trello.get("/1/organization/" + this.organization + "/boards/all", function(err, boards) {
-        if(err) throw err;
-        for (var i=0; i < boards.length; i++) {
-            self.getLists(boards[i].id, boards[i].name, function(lists) {
-                sum(lists);
-            });
-        }
+    this.getLists(function(lists) {
+        var points = self.sumPointsPerLists(lists);
+        console.log('Time: ' + new Date().toString())
+        console.log(points);
     });
 }
 
-trello_stats.prototype.getLists = function(board_id, board_name, callback) {
-    var self = this;
-    this.trello.get('/1/board/' + board_id + '/lists/all', function(err, lists) {
-        console.log('Board: ' + board_name)
+trello_stats.prototype.getLists = function(callback) {
+    this.trello.get('/1/boards/' + this.board_id + '/lists/all', function(err, lists) {
+        //console.log('Board: ' + board_name)
         if(err) throw err;
         callback(lists);
     });
 }
 
-function sum(lists, board_name) {
+//looks for points in the name of a card e.g. "Write tests for node-trello (2)" and sums them up per list
+trello_stats.prototype.sumPointsPerLists = function(lists) {
+    var points = {};
     for (var i=0; i < lists.length; i++) {
         var list = lists[i];
         var list_name = list.name;
@@ -39,10 +37,9 @@ function sum(lists, board_name) {
                 list_sum += parseInt(n[1]);
             }        
         }
-        console.log(' ' + list_name + ": " + list_sum);
+        points[list_name] = list_sum;
     }
-    console.log("\n");
-    
+    return points;
 }
 
 exports = module.exports = trello_stats;
