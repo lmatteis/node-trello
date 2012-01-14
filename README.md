@@ -1,7 +1,9 @@
 Node wrapper for Trello's HTTP API.
 ====
 
-## Example
+## Install
+
+    npm install node-trello
 
 ### Getting the Token
 
