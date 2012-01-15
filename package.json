@@ -10,7 +10,7 @@
   }
 , "bugs" :
   { "url" : "http://github.com/lmatteis/node-trello/issues" }
-, "engines" : ["node >= 0.6.6"]
+, "engines" : ["node >= 0.4.7"]
 , "main" : "./main"
 ,"scripts": { "test": "node tests.js" }
 }
