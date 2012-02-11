@@ -1,4 +1,5 @@
 var https = require('https');
+var querystring = require('querystring');
 
 var trello = function(key, token) {
   this.key = key;
@@ -6,29 +7,20 @@ var trello = function(key, token) {
   this.host = "api.trello.com";
 };
 
-trello.prototype.params = function(args) {
-  var str = "";
-  var c = 1;
-  for(var i in args) {
-    if (c == 1)
-      c = 0;
-    else
-      str += "&";
-    str += i + "=" + args[i];
+trello.prototype.invokeGeneric = function(method, apiCall, args, callback) {
+  if (!callback) {
+    // allow args to be optional and callback passed in its position.
+    callback = args;
+    args = {};
+  } else {
+    args = args || {};
   }
-  return str;
-};
-
-trello.prototype.get = trello.prototype.api = function(apiCall, args, callback) {
-  callback = callback || args;
-  args = args || {};
   
-  var host = "api.trello.com";
   var options = {
-    host: host,
+    host: this.host,
     port: 443,
     path: apiCall,
-    method: 'GET'
+    method: method
   };
 
   if(this.key) {
@@ -37,8 +29,13 @@ trello.prototype.get = trello.prototype.api = function(apiCall, args, callback) 
   if(this.token) {
     args["token"] = this.token;
   }
-
-  options.path += "?" + this.params(args);
+  if (method == 'GET') {
+    options.path += "?" + querystring.stringify(args);
+  } else {
+    post_data = querystring.stringify(args);
+    options.headers = { 'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Length': post_data.length };
+  }
   var req = https.request(options, function(res) {
     res.setEncoding('utf8');
     var data = "";
@@ -54,11 +51,26 @@ trello.prototype.get = trello.prototype.api = function(apiCall, args, callback) 
       }
     });
   });
+  if (method != 'GET') {
+    req.write(post_data);
+  }
   req.end();
 
   req.on('error', function(e) {
     throw e;
   });
+};
+
+trello.prototype.get = trello.prototype.api = function(apiCall, args, callback) {
+  return this.invokeGeneric('GET', apiCall, args, callback);
+};
+
+trello.prototype.post = function(apiCall, args, callback) {
+  return this.invokeGeneric('POST', apiCall, args, callback);
+};
+
+trello.prototype.put = function(apiCall, args, callback) {
+  return this.invokeGeneric('PUT', apiCall, args, callback);
 };
 
 exports = module.exports = trello;
