@@ -11,9 +11,8 @@ trello.prototype.get = trello.prototype.api = function(apiCall, args, callback) 
   callback = callback || args;
   args = args || {};
   
-  var host = "api.trello.com";
   var options = {
-    host: host,
+    host: this.host,
     port: 443,
     path: apiCall,
     method: 'GET'
