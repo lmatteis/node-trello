@@ -1,22 +1,10 @@
 var https = require('https');
+var querystring = require('querystring');
 
 var trello = function(key, token) {
   this.key = key;
   this.token = token;
   this.host = "api.trello.com";
-};
-
-trello.prototype.params = function(args) {
-  var str = "";
-  var c = 1;
-  for(var i in args) {
-    if (c == 1)
-      c = 0;
-    else
-      str += "&";
-    str += i + "=" + args[i];
-  }
-  return str;
 };
 
 trello.prototype.get = trello.prototype.api = function(apiCall, args, callback) {
@@ -38,7 +26,7 @@ trello.prototype.get = trello.prototype.api = function(apiCall, args, callback) 
     args["token"] = this.token;
   }
 
-  options.path += "?" + this.params(args);
+  options.path += "?" + querystring.stringify(args);
   var req = https.request(options, function(res) {
     res.setEncoding('utf8');
     var data = "";
