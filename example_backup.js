@@ -6,15 +6,27 @@ var fs = require('fs');
 var Trello = require("./main.js");
 var t = new Trello(app_key, oauth_access_token);
 
-t.get("/1/organization/" + organization + "/boards/all", function(err, data) {
+t.get("/1/organization/" + organization + "/boards/all", function(apiCall, err, data) {
   if(err) throw err;
+
+  var board_list = {} // -> Hash table (*)
+
   for(board in data) {
+      
       var board_id = data[board].id;
       var board_name = data[board].name;
-      t.api('/1/board/' + board_id + '/cards/all', function(err, data) {
+      board_list[board_id] = board_name; // -> (*) to get the right name
+      
+
+      t.api('/1/board/' + board_id + '/cards/all', function(apiCall, err, data) {
+          
           if(err) throw err;
-          var filename = board_name + " - " + new Date().toString() + Math.random()  + ".json";
-          console.log('Backing up ' + data.length + ' cards for board "' + board_name);
+
+          // get board name from apiCall variable returned
+          id = apiCall.replace('/1/board/', '').replace('/cards/all','')                
+          var filename = board_list[id] + ' - ' + Date() + ".json";
+
+          console.log('Backing up ' + data.length + ' cards for board "' + board_list[id]);
           
           fs.writeFile(filename, JSON.stringify(data), function(err) {
               if(err) {
