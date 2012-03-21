@@ -35,7 +35,7 @@ trello_backup.prototype.backupLists = function(board_id, board_name) {
 }
 
 trello_backup.prototype.writeCards = function(board_name, data) {
-    var filename = board_name + " - " + new Date().toString()  + "." + this.data_type;
+    var filename = 'backup-data/' + board_name + " - " + new Date().toString()  + "." + this.data_type;
     console.log('Backing up ' + data.length + ' cards for board "' + board_name + '"');
 
     var string;
