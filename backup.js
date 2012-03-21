@@ -1,9 +1,9 @@
 var Trello = require("./main.js");
 var fs = require('fs');
 
-var trello_backup = function(app_key, oauth_access_token, organization, data_type, ignored_attributes) {
+var trello_backup = function(api_key, api_token, organization, data_type, ignored_attributes) {
     this.organization = organization;
-    this.trello = new Trello(app_key, oauth_access_token);
+    this.trello = new Trello(api_key, api_token);
     this.data_type = data_type; //json, csv
     this.ignored_attributes = ignored_attributes;
 }
