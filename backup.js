@@ -1,129 +1,197 @@
 var Trello = require("./main.js");
 var fs = require('fs');
+var async = require("async");
 
-var trello_backup = function(api_key, api_token, organization, data_type, ignored_attributes) {
-    this.organization = organization;
-    this.trello = new Trello(api_key, api_token);
-    this.data_type = data_type; //json, csv
-    this.ignored_attributes = ignored_attributes;
+var api;
+var organization;
+var data = [];
+
+var tick = function() { process.stdout.write('.') };
+
+var backupOrganization = function(api_key, api_token, organization2) {
+    api = new Trello(api_key, api_token);
+    organization = organization2;
+
+	async.series([
+		appendBoardInfos,
+		appendListAndCardInfos,
+		filterOnlyReleased,
+		appendDateAndVersionFromListTitle,
+		appendMemberInfos,
+		appendLabelInfos,
+		convertToCSV,
+		writeFile
+    	//print
+	]);
 }
 
-trello_backup.prototype.backupOrganization = function() {
-    var self = this;
-    this.trello.get("/1/organization/" + this.organization + "/boards/all", function(err, data) {
+var appendBoardInfos = function(callback) {
+    api.get("/1/organization/" + organization + "/boards/all", function(err, response) {
+    	tick();
         if(err) throw err;
-        for (var i=0; i < data.length; i++) {
-            self.backupLists(data[i].id, data[i].name);
+        for (var i=0; i < response.length; i++) {
+        	var id = response[i].id;
+        	var name = response[i].name;
+        	data.push({ board_name : name, board_id: id})
         }
+        callback(null);
     });
 }
 
-trello_backup.prototype.backupCards = function(board_id, board_name) {
-    var self = this;
-    this.trello.get('/1/board/' + board_id + '/cards/all', function(err, data) {
-        if(err) throw err;
-        self.writeCards(board_name, data);
-    });
+var appendListAndCardInfos = function(callback) {
+	var data2 = [];
+	async.forEach(
+		data, 
+		function(item, callback2) {
+			api.get('/1/board/' + item.board_id + '/lists/all', function(err, response) {
+				tick();
+				if(err) throw err;
+				for (var j=0; j < response.length; j++) {
+					var list_name = response[j].name;
+					for (var i = 0; i < response[j].cards.length; i++) {
+						var card = response[j].cards[i];
+						var card_name = card.name;
+						var n = card_name.match(/\((\d)\)/);
+						var estimate = n ? n[1] : 0;
+						var idMembers = card.idMembers;
+						data2.push({ 
+								board_name : item.board_name, 
+								//board_id: item.board_id, 
+								card_id: card.id, 
+								list_name : list_name,
+								card_name : card_name,
+								estimate : estimate,
+								idMembers : idMembers
+							});
+					};
+				}
+				callback2(null);
+			});
+		},
+		function() {
+			data = data2;
+			callback(null);
+		}
+	);
 }
 
-trello_backup.prototype.backupLists = function(board_id, board_name) {
-    var self = this;
-    this.trello.get('/1/board/' + board_id + '/lists/all', function(err, data) {
-        if(err) throw err;
-        self.writeCards(board_name, data);
-    });
+var filterOnlyReleased = function(callback) {
+	var data2 = [];
+	for (var i = 0; i < data.length; i++) {
+		if(data[i].list_name.indexOf('Released:') == 0) {
+			data2.push(data[i]);
+		}
+	};
+	data = data2;
+	callback(null);
 }
 
-trello_backup.prototype.writeCards = function(board_name, data) {
-    var filename = 'backup-data/' + board_name + " - " + new Date().toString()  + "." + this.data_type;
-    console.log('Backing up ' + data.length + ' cards for board "' + board_name + '"');
+var appendDateAndVersionFromListTitle = function(callback) {
+	var data2 = [];
+	for (var i = 0; i < data.length; i++) {
+		var regx = data[i].list_name.match(/Released: (.*?) (.*?)$/);
+		data[i].date_range = regx[1];
+		data[i].versions = regx[2];
+		data2.push(data[i]);
+	};
+	data = data2;
+	callback(null);
+}
 
-    var string;
-    if(this.data_type == 'csv') {
-        string = this.createCSVTitle(data);
-        string += this.createCSVData(data);
-    }else {
-        string = JSON.stringify(data);
+var appendMemberInfos = function(callback) {
+	var members = {};
+	for (var i = 0; i < data.length; i++) {
+		for (var j = 0; j < data[i].idMembers.length; j++) {
+			members[data[i].idMembers[j]] = "";
+		};
+	};
+	async.forEach(
+		Object.keys(members), 
+		function(member_id, callback2) {
+			api.get('/1/members/' + member_id, function(err, response) {
+				tick();
+				if(err) throw err;
+				members[member_id] = response.fullName; 
+				callback2(null);
+			});
+		},
+		function() {
+			for (var i = 0; i < data.length; i++) {
+				var member_names = [];
+				for (var j = 0; j < data[i].idMembers.length; j++) {
+					member_names[j] = members[data[i].idMembers[j]];
+				};
+				data[i].member_names = member_names;
+				delete data[i].idMembers;
+			};
+			callback(null);
+		}
+	);
+}
+
+var appendLabelInfos = function(callback) {
+	async.forEach(
+		data, 
+		function(card, callback2) {
+			api.get('/1/cards/' + card.card_id, function(err, response) {
+				tick();
+				if(err) throw err;
+				if(response.labels.length > 0) {					
+					card.label = response.labels[0].name;
+				}
+				callback2(null);
+			});
+		},
+		function() {
+			callback(null);
+		}
+	);
+}
+
+var convertToCSV = function(callback) {
+	var csv = "";
+	for (var i=0; i < data.length; i++) {
+        var card = data[i];
+        for(key in card) {
+        	var prop = card[key].toString();
+            prop = convertToCSVField(prop);
+             csv += prop + ", ";
+        }
+        csv = csv.substr(0, csv.length-2);
+        csv += '\n';
     }
+    data = csv;
+    callback(null);
+}
 
-    fs.writeFile(filename, string, function(err) {
+var writeFile = function(callback) {
+	var filename = 'backup-data/' + new Date().toString()  + ".csv";
+    fs.writeFile(filename, data, function(err) {
         if(err) {
             console.log(err);
         } else {
-            console.log("Saved to " + filename);
+            console.log("\nSaved to " + filename);
         }
+        callback(null);
     });
 }
 
-//todo: fix if first list doesn't have a card
-trello_backup.prototype.createCSVTitle = function(data) {
-    var csv = "";
-    var list = data[0];
-    for(key in list) {
-        if (key != "cards" && !this.shouldBeIgnored(key)) {
-            csv += key + ", ";
-        }   
-    }
-    // ensure the card keys are always at the end
-    for(key2 in list.cards[0]) {
-        if(!this.shouldBeIgnored('card-'+ key2)) {
-            csv += 'card-' + key2 + ", ";
-        }
-    }
-    csv = csv.substr(0, csv.length-2);
-    csv += '\n';
-    return csv;
-}
-
-trello_backup.prototype.createCSVData = function(data) {
-    var csv = "";
-    // builds the list csv piece and then prepends this to every card entry
-    for (var i=0; i < data.length; i++) {
-        var list = data[i];
-        var list_csv = "";
-        for(key in list) {
-            if (key != "cards" && !this.shouldBeIgnored(key)) {
-                var prop = list[key].toString();
-                prop = convertToCSVField(prop);
-                list_csv += prop + ", ";
-            };
-        };
-
-        // make sure not to add an extra field
-        list_csv = list_csv.substr(0, list_csv.length-2);
-
-        // card data or dump list information if no cards
-        if (list.cards != null) {
-            for (var j=0; j < list.cards.length; j++) {
-                csv += list_csv + ",";
-                var card = list.cards[j];
-                for(key in card) {
-                    if(!this.shouldBeIgnored('card-'+key)) {
-                        var prop = card[key].toString();
-                        prop = convertToCSVField(prop);
-                        csv += prop + ", ";
-                    }
-                };
-                csv = csv.substr(0, csv.length-2);
-                csv += '\n';
-            };      
-        } else {
-            csv += list_csv;
-            csv += '\n';
-        };
-    };
-    return csv;
-}
-
-trello_backup.prototype.shouldBeIgnored = function(attribute) {
-    return this.ignored_attributes.indexOf(attribute) > -1;
-}
-//todo: preserve quotes, commata and new lines. use csv-standard
-function convertToCSVField(field) {
+//TODO: preserve quotes, commata and new lines. use csv-standard
+var convertToCSVField = function (field) {
     field = field.replace(/"/g,' '); // remove "
-    field = field.replace(/,/g,' '); // remove ,
+    field = field.replace(/,/g,''); // remove ,
     field = field.replace(/\n/g, ' '); // remove new lines
     return field;
 }
 
-exports = module.exports = trello_backup;
+var print = function(callback) {
+	console.log(data)
+}
+
+exports.backupOrganization = module.exports.backupOrganization = backupOrganization;
+
+//for tests
+exports.convertToCSVField = module.exports.convertToCSVField = convertToCSVField;
+exports.appendBoardInfos = module.exports.appendBoardInfos = appendBoardInfos;
+exports.api = module.exports.api = api;
+
