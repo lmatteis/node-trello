@@ -19,9 +19,10 @@ var backupOrganization = function(api_key, api_token, organization2) {
 		appendDateAndVersionFromListTitle,
 		appendMemberInfos,
 		appendLabelInfos,
+		appendStartAndDone,
 		convertToCSV,
-		writeFile
-    	//print
+		writeFile,
+    	print
 	]);
 }
 
@@ -48,6 +49,7 @@ var appendListAndCardInfos = function(callback) {
 				if(err) throw err;
 				for (var j=0; j < response.length; j++) {
 					var list_name = response[j].name;
+					var list_id = response[j].id;
 					for (var i = 0; i < response[j].cards.length; i++) {
 						var card = response[j].cards[i];
 						var card_name = card.name;
@@ -59,6 +61,7 @@ var appendListAndCardInfos = function(callback) {
 								//board_id: item.board_id, 
 								card_id: card.id, 
 								list_name : list_name,
+								//list_id : list_id,
 								card_name : card_name,
 								estimate : estimate,
 								idMembers : idMembers
@@ -90,7 +93,7 @@ var appendDateAndVersionFromListTitle = function(callback) {
 	var data2 = [];
 	for (var i = 0; i < data.length; i++) {
 		var regx = data[i].list_name.match(/Released: (.*?) (.*?)$/);
-		data[i].date_range = regx[1];
+		data[i].sprint_range = regx[1];
 		data[i].versions = regx[2];
 		data2.push(data[i]);
 	};
@@ -148,14 +151,49 @@ var appendLabelInfos = function(callback) {
 	);
 }
 
+var appendStartAndDone = function(callback) {
+	var data2 = [];
+	async.forEach(
+		data, 
+		function(card, callback2) {
+			api.get('/1/cards/' + card.card_id + '/actions', {filter:'updateCard:idList'}, function(err, response) {
+				tick();
+				if(err) throw err;
+				card.started = '';
+				card.finished = '';
+				for (var i = 0; i < response.length; i++) {
+					var startedAction = response[i].data.listBefore.name == 'Sprint Backlog';
+					var doneAction = response[i].data.listAfter.name == 'Released';
+					var date = response[i].date;
+					card.started = startedAction ? date : '';
+					card.finished = doneAction ? date : '';
+				};
+				data2.push(card);
+				callback2(null);
+			});
+		},
+		function() {
+			data = data2;
+			callback(null);
+		}
+	);
+}
+
 var convertToCSV = function(callback) {
 	var csv = "";
+	var title = data[0];
+	for(key in title) {
+        csv += key + ", ";
+    }
+    csv = csv.substr(0, csv.length-2);
+    csv += '\n';
+
 	for (var i=0; i < data.length; i++) {
         var card = data[i];
         for(key in card) {
         	var prop = card[key].toString();
             prop = convertToCSVField(prop);
-             csv += prop + ", ";
+            csv += prop + ", ";
         }
         csv = csv.substr(0, csv.length-2);
         csv += '\n';
