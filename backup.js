@@ -4,7 +4,6 @@ var async = require("async");
 
 var api;
 var organization;
-var data = [];
 
 var tick = function() { process.stdout.write('.') };
 
@@ -12,34 +11,34 @@ var backupOrganization = function(api_key, api_token, organization2) {
     api = new Trello(api_key, api_token);
     organization = organization2;
 
-	async.series([
-		appendBoardInfos,
+	async.waterfall([
+		getBoards,
 		appendListAndCardInfos,
 		filterOnlyReleased,
 		appendDateAndVersionFromListTitle,
 		appendMemberInfos,
 		appendLabelInfos,
 		appendStartAndDone,
+		duplicateEntryForEachMember,
 		convertToCSV,
 		writeFile,
-    	print
+    	//print
 	]);
 }
 
-var appendBoardInfos = function(callback) {
+var getBoards = function(callback) {
     api.get("/1/organization/" + organization + "/boards/all", function(err, response) {
     	tick();
+    	var data = [];
         if(err) throw err;
-        for (var i=0; i < response.length; i++) {
-        	var id = response[i].id;
-        	var name = response[i].name;
-        	data.push({ board_name : name, board_id: id})
-        }
-        callback(null);
+        response.forEach(function(board) {
+        	data.push({ board_name : board.name, board_id: board.id})
+        });
+        callback(null, data);
     });
 }
 
-var appendListAndCardInfos = function(callback) {
+var appendListAndCardInfos = function(data, callback) {
 	var data2 = [];
 	async.forEach(
 		data, 
@@ -72,24 +71,22 @@ var appendListAndCardInfos = function(callback) {
 			});
 		},
 		function() {
-			data = data2;
-			callback(null);
+			callback(null, data2);
 		}
 	);
 }
 
-var filterOnlyReleased = function(callback) {
+var filterOnlyReleased = function(data, callback) {
 	var data2 = [];
 	for (var i = 0; i < data.length; i++) {
 		if(data[i].list_name.indexOf('Released:') == 0) {
 			data2.push(data[i]);
 		}
 	};
-	data = data2;
-	callback(null);
+	callback(null, data2);
 }
 
-var appendDateAndVersionFromListTitle = function(callback) {
+var appendDateAndVersionFromListTitle = function(data, callback) {
 	var data2 = [];
 	for (var i = 0; i < data.length; i++) {
 		var regx = data[i].list_name.match(/Released: (.*?) (.*?)$/);
@@ -97,11 +94,10 @@ var appendDateAndVersionFromListTitle = function(callback) {
 		data[i].versions = regx[2];
 		data2.push(data[i]);
 	};
-	data = data2;
-	callback(null);
+	callback(null, data2);
 }
 
-var appendMemberInfos = function(callback) {
+var appendMemberInfos = function(data, callback) {
 	var members = {};
 	for (var i = 0; i < data.length; i++) {
 		for (var j = 0; j < data[i].idMembers.length; j++) {
@@ -127,12 +123,12 @@ var appendMemberInfos = function(callback) {
 				data[i].member_names = member_names;
 				delete data[i].idMembers;
 			};
-			callback(null);
+			callback(null, data);
 		}
 	);
 }
 
-var appendLabelInfos = function(callback) {
+var appendLabelInfos = function(data, callback) {
 	async.forEach(
 		data, 
 		function(card, callback2) {
@@ -146,12 +142,12 @@ var appendLabelInfos = function(callback) {
 			});
 		},
 		function() {
-			callback(null);
+			callback(null, data);
 		}
 	);
 }
 
-var appendStartAndDone = function(callback) {
+var appendStartAndDone = function(data, callback) {
 	var data2 = [];
 	async.forEach(
 		data, 
@@ -174,12 +170,39 @@ var appendStartAndDone = function(callback) {
 		},
 		function() {
 			data = data2;
-			callback(null);
+			callback(null, data);
 		}
 	);
 }
 
-var convertToCSV = function(callback) {
+var duplicateEntryForMember = function(item, member) {
+	//clone object
+	var newItem = {};
+	for(var keys = Object.keys(item), l = keys.length; l; --l)
+	{
+		newItem[ keys[l-1] ] = item[ keys[l-1] ];
+	}
+	newItem.member = member;
+	delete newItem.member_names;
+	return newItem;
+}
+
+var duplicateEntryForEachMember = function(data, callback) {
+	var data2 = [];
+	data.forEach(function(item) {
+		if(item.member_names.length == 0){
+			data2.push(duplicateEntryForMember(item, "<unknown>"));
+		} else {	
+			item.member_names.forEach(function(member) {
+				data2.push(duplicateEntryForMember(item, member));
+			});
+		}
+
+	});
+	callback(null, data2);
+}
+
+var convertToCSV = function(data, callback) {
 	var csv = "";
 	var title = data[0];
 	for(key in title) {
@@ -198,11 +221,10 @@ var convertToCSV = function(callback) {
         csv = csv.substr(0, csv.length-2);
         csv += '\n';
     }
-    data = csv;
-    callback(null);
+    callback(null, csv);
 }
 
-var writeFile = function(callback) {
+var writeFile = function(data, callback) {
 	var filename = 'backup-data/' + new Date().toString()  + ".csv";
     fs.writeFile(filename, data, function(err) {
         if(err) {
@@ -222,7 +244,7 @@ var convertToCSVField = function (field) {
     return field;
 }
 
-var print = function(callback) {
+var print = function(data, callback) {
 	console.log(data)
 }
 
@@ -230,6 +252,5 @@ exports.backupOrganization = module.exports.backupOrganization = backupOrganizat
 
 //for tests
 exports.convertToCSVField = module.exports.convertToCSVField = convertToCSVField;
-exports.appendBoardInfos = module.exports.appendBoardInfos = appendBoardInfos;
-exports.api = module.exports.api = api;
-
+exports.getBoards = module.exports.getBoards = getBoards;
+exports.duplicateEntryForEachMember = module.exports.duplicateEntryForEachMember = duplicateEntryForEachMember;
