@@ -7,7 +7,7 @@ var organization;
 
 var tick = function() { process.stdout.write('.') };
 
-var backupOrganization = function(api_key, api_token, organization2) {
+var createStats = function(api_key, api_token, organization2) {
     api = new Trello(api_key, api_token);
     organization = organization2;
 
@@ -248,7 +248,7 @@ var print = function(data, callback) {
 	console.log(data)
 }
 
-exports.backupOrganization = module.exports.backupOrganization = backupOrganization;
+exports.createStats = module.exports.createStats = createStats;
 
 //for tests
 exports.convertToCSVField = module.exports.convertToCSVField = convertToCSVField;

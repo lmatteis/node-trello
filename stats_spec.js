@@ -10,7 +10,7 @@ var dummyApi = {
 
 
 describe('convertToCSVField', function(){
-  var tb = require('./backup');
+  var tb = require('./stats');
 
   it('should return a simple string unchanged', function(){
     expect(tb.convertToCSVField('A simple String')).toEqual('A simple String');
@@ -28,7 +28,7 @@ describe('convertToCSVField', function(){
 
 describe('appendBoardInfos', function(){
 
-  var tb = SandboxedModule.require('./backup', {
+  var tb = SandboxedModule.require('./stats', {
     locals: {api: dummyApi},
   });
 
@@ -45,7 +45,7 @@ describe('appendBoardInfos', function(){
 
 
 describe('duplicateEntryForEachMember', function(){
-  var tb = require('./backup');
+  var tb = require('./stats');
 
   var data = [{card_id: '123', member_names : ['matt', 'dave']}];
   it('should duplicate an entry with two members assigned', function(done){
