@@ -63,7 +63,7 @@ describe('duplicateEntryForEachMember', function(){
   it('should keep an entry with no members assigned', function(done){
     tb.duplicateEntryForEachMember(data2, function(error, newData) {
       expect(newData.length).toEqual(1);
-      expect(newData[0].member).toEqual('');
+      expect(newData[0].member).toEqual('<unknown>');
       expect(newData[0].card_id).toEqual('123');
       done();
     });
