@@ -56,15 +56,15 @@ var appendListAndCardInfos = function(data, callback) {
 						var estimate = n ? n[1] : 0;
 						var idMembers = card.idMembers;
 						data2.push({ 
-								board_name : item.board_name, 
-								//board_id: item.board_id, 
-								card_id: card.id, 
-								list_name : list_name,
-								//list_id : list_id,
-								card_name : card_name,
-								estimate : estimate,
-								idMembers : idMembers
-							});
+							board_name : item.board_name, 
+							//board_id: item.board_id, 
+							card_id: card.id, 
+							list_name : list_name,
+							//list_id : list_id,
+							card_name : card_name,
+							estimate : estimate,
+							idMembers : idMembers
+						});
 					};
 				}
 				callback2(null);
@@ -157,15 +157,35 @@ var appendStartAndDone = function(data, callback) {
 				if(err) throw err;
 				card.started = '';
 				card.finished = '';
-				for (var i = 0; i < response.length; i++) {
-					var startedAction = response[i].data.listBefore.name == 'Sprint Backlog';
-					var doneAction = response[i].data.listAfter.name == 'Released';
-					var date = response[i].date;
-					card.started = startedAction ? date : '';
-					card.finished = doneAction ? date : '';
-				};
-				data2.push(card);
-				callback2(null);
+				response.forEach(function(action) {
+					var list = action.data.listAfter.name;
+					var startedAction = list == 'In Arbeit' || 'Ready';
+					var doneAction = list.indexOf('Released') == 0; //Some type of release
+					var newDate = new Date(action.date);
+					if(startedAction) {
+						if(!card.started) card.started = newDate;
+						if(card.started && newDate < card.started) card.started = newDate;	
+					}
+					if(doneAction && !card.finished) {
+						card.finished = newDate;
+					}
+				});
+				//fallback
+				if(!card.started) {
+					console.log("couldn't find a real start date using created card")
+					api.get('/1/cards/' + card.card_id + '/actions', {filter:'createCard'}, function(err, response) {
+						if(err) throw err;
+						var list = response[0].data.list.name;
+						var newDate = new Date(response[0].date);
+						card.started = newDate;
+						card.finished = newDate;
+						data2.push(card);
+						callback2(null);
+					});
+				} else {
+					data2.push(card);
+					callback2(null);
+				}
 			});
 		},
 		function() {
