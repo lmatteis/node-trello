@@ -1,0 +1,16 @@
+{ "name": "trello-stats"
+, "description": "Get card statistics from Trello based on naming conventions and card data"
+, "main": "./backup.js"
+, "author": "Matthias Luebken"
+, "version": "0.0.1"
+, "repository" :
+  { "type" : "git"
+  , "url" : "http://github.com/adcloud"
+  }
+, "devDependencies":
+  { "node-trello": ">0.0.0"
+  , "jasmine-node": ">0.0.0"
+  , "async": ">0.0.0"
+  , "sandboxed-module": ">0.0.0"
+  }
+}
