@@ -1,24 +1,6 @@
 
 var SandboxedModule = require('sandboxed-module');
 
-
-describe('convertToCSVField', function(){
-  var sts = require('./stats');
-
-  it('should return a simple string unchanged', function(){
-    expect(sts.convertToCSVField('A simple String')).toEqual('A simple String');
-  });
-  it('should remove double quotes', function(){
-    expect(sts.convertToCSVField('"A double quoted String"')).toEqual(' A double quoted String ');
-  });
-  it('should remove commas', function(){
-    expect(sts.convertToCSVField('A String, with commas, ')).toEqual('A String with commas ');
-  });
-  it('should remove new lines', function(){
-    expect(sts.convertToCSVField('A String\nwith new lines\n')).toEqual('A String with new lines ');
-  });
-});
-
 describe('getBoards', function(){
   var dummyApi = { 
   get:function(path, callback) {
@@ -26,7 +8,6 @@ describe('getBoards', function(){
       var board2 = {name: 'a second board name', id: 456};
       callback(null, [board1, board2]);          
   }};
-
   var sts = SandboxedModule.require('./stats', {
     locals: {api: dummyApi},
   });
@@ -45,8 +26,8 @@ describe('getBoards', function(){
 
 describe('duplicateEntryForEachMember', function(){
   var sts = require('./stats');
-
   var data = [{card_id: '123', member_names : ['matt', 'dave']}];
+
   it('should duplicate an entry with two members assigned', function(done){
     sts.duplicateEntryForEachMember(data, function(error, newData) {
       expect(newData.length).toEqual(2);
@@ -70,13 +51,12 @@ describe('duplicateEntryForEachMember', function(){
 });
 
 describe('appendLabelInfosAndFeatureAreas', function () {
-
   var dummyApi = {
-  get:function(path, callback) {
+    get:function(path, callback) {
       var card = {name: 'a first board name', id: 123, labels: [{name:'a label'}, {name:'a 2nd label'}], desc: 'This is a description. FeatureArea:anarea '};
       callback(null, card);          
-  }};
-
+    }
+  };
   var sts = SandboxedModule.require('./stats', {
     locals: {api: dummyApi},
   });
@@ -95,6 +75,24 @@ describe('appendLabelInfosAndFeatureAreas', function () {
       expect(newData[0].feature_area).toEqual('anarea ');
       done()
     });
+  });
+});
+
+
+describe('convertToCSVField', function(){
+  var sts = require('./stats');
+
+  it('should return a simple string unchanged', function(){
+    expect(sts.convertToCSVField('A simple String')).toEqual('A simple String');
+  });
+  it('should remove double quotes', function(){
+    expect(sts.convertToCSVField('"A double quoted String"')).toEqual(' A double quoted String ');
+  });
+  it('should remove commas', function(){
+    expect(sts.convertToCSVField('A String, with commas, ')).toEqual('A String with commas ');
+  });
+  it('should remove new lines', function(){
+    expect(sts.convertToCSVField('A String\nwith new lines\n')).toEqual('A String with new lines ');
   });
 });
 
