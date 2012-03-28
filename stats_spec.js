@@ -1,13 +1,6 @@
 
 var SandboxedModule = require('sandboxed-module');
 
-var dummyApi = { 
-  get:function(path, callback) {
-      var board1 = {name: 'a first board name', id: 123};
-      var board2 = {name: 'a second board name', id: 456};
-      callback(null, [board1, board2]);          
-  }};
-
 
 describe('convertToCSVField', function(){
   var tb = require('./stats');
@@ -27,6 +20,13 @@ describe('convertToCSVField', function(){
 });
 
 describe('appendBoardInfos', function(){
+
+  var dummyApi = { 
+  get:function(path, callback) {
+      var board1 = {name: 'a first board name', id: 123};
+      var board2 = {name: 'a second board name', id: 456};
+      callback(null, [board1, board2]);          
+  }};
 
   var tb = SandboxedModule.require('./stats', {
     locals: {api: dummyApi},
@@ -66,6 +66,35 @@ describe('duplicateEntryForEachMember', function(){
       expect(newData[0].member).toEqual('<unknown>');
       expect(newData[0].card_id).toEqual('123');
       done();
+    });
+  });
+});
+
+describe('appendLabelInfosAndFeatureAreas', function () {
+
+  var dummyApi = {
+  get:function(path, callback) {
+      var card = {name: 'a first board name', id: 123, labels: [{name:'a label'}, {name:'a 2nd label'}], desc: 'This is a description. FeatureArea:anarea '};
+      callback(null, card);          
+  }};
+
+  var tb = SandboxedModule.require('./stats', {
+    locals: {api: dummyApi},
+  });
+  var data = [{card_id: '123'}];
+
+  it('should append labels', function (done) {
+    tb.appendLabelInfosAndFeatureAreas(data, function(error, newData) {
+      expect(newData[0].label).toEqual('a label');
+      //expect(newData[1].label).toEqual('a 2nd label');
+      done()
+    });
+  });
+
+  it('should append feature areas', function(done) {
+    tb.appendLabelInfosAndFeatureAreas(data, function(error, newData) {
+      expect(newData[0].feature_area).toEqual('anarea ');
+      done()
     });
   });
 });

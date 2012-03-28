@@ -17,7 +17,7 @@ var createStats = function(api_key, api_token, organization2) {
 		filterOnlyReleased,
 		appendDateAndVersionFromListTitle,
 		appendMemberInfos,
-		appendLabelInfos,
+		appendLabelInfosAndFeatureAreas,
 		appendStartAndDone,
 		duplicateEntryForEachMember,
 		convertToCSV,
@@ -128,7 +128,7 @@ var appendMemberInfos = function(data, callback) {
 	);
 }
 
-var appendLabelInfos = function(data, callback) {
+var appendLabelInfosAndFeatureAreas = function(data, callback) {
 	async.forEach(
 		data, 
 		function(card, callback2) {
@@ -138,6 +138,8 @@ var appendLabelInfos = function(data, callback) {
 				if(response.labels.length > 0) {					
 					card.label = response.labels[0].name;
 				}
+				var featureArea = response.desc.match('FeatureArea:(.*)');
+				card.feature_area = featureArea ? featureArea[1] : '';
 				callback2(null);
 			});
 		},
@@ -274,3 +276,4 @@ exports.createStats = module.exports.createStats = createStats;
 exports.convertToCSVField = module.exports.convertToCSVField = convertToCSVField;
 exports.getBoards = module.exports.getBoards = getBoards;
 exports.duplicateEntryForEachMember = module.exports.duplicateEntryForEachMember = duplicateEntryForEachMember;
+exports.appendLabelInfosAndFeatureAreas = module.exports.appendLabelInfosAndFeatureAreas = appendLabelInfosAndFeatureAreas;
