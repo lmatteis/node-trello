@@ -23,6 +23,38 @@ describe('getBoards', function(){
   });
 });
 
+describe('appendListAndCardInfos', function() {
+  var dummyApi = {
+    get:function(path, callback) {
+      var card1 = {name : 'a first card', id: 111};
+      var card2 = {name : 'a second card (2)', id: 222, idMembers: ['abc', 'opc']};
+      var list1 = {name: 'a first list', id: 123, cards : [card1]};
+      var list2 = {name: 'a second list', id: 345, cards : [card2]};
+      callback(null, [list1, list2]);          
+    }
+  };
+  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
+  var data = [{card_id: '123'}];
+
+  it('should append list infos', function(done) {
+    sts.appendListAndCardInfos(data, function(error, newData) {
+      expect(newData[0].list_name).toEqual('a first list');
+      expect(newData[1].list_name).toEqual('a second list');
+      done();
+    });
+  });
+  it('should append card infos', function(done) {
+    sts.appendListAndCardInfos(data, function(error, newData) {
+      expect(newData[0].card_name).toEqual('a first card');
+      expect(newData[0].card_id).toEqual(111);
+      expect(newData[1].card_name).toEqual('a second card (2)');
+      expect(newData[1].estimate).toEqual('2');
+      expect(newData[1].idMembers).toEqual(['abc', 'opc']);
+      done();
+    });
+  });
+});
+
 
 describe('duplicateEntryForEachMember', function(){
   var sts = require('./stats');
@@ -57,9 +89,7 @@ describe('appendLabelInfosAndFeatureAreas', function () {
       callback(null, card);          
     }
   };
-  var sts = SandboxedModule.require('./stats', {
-    locals: {api: dummyApi},
-  });
+  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
   var data = [{card_id: '123'}];
 
   it('should append labels', function (done) {

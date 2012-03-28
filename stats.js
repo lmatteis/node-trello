@@ -277,3 +277,4 @@ exports.convertToCSVField = module.exports.convertToCSVField = convertToCSVField
 exports.getBoards = module.exports.getBoards = getBoards;
 exports.duplicateEntryForEachMember = module.exports.duplicateEntryForEachMember = duplicateEntryForEachMember;
 exports.appendLabelInfosAndFeatureAreas = module.exports.appendLabelInfosAndFeatureAreas = appendLabelInfosAndFeatureAreas;
+exports.appendListAndCardInfos = module.exports.appendListAndCardInfos = appendListAndCardInfos;
