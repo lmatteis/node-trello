@@ -1,4 +1,4 @@
-var Trello = require("./main.js");
+var Trello = require('node-trello');
 var fs = require('fs');
 var async = require("async");
 
