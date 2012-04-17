@@ -30,6 +30,17 @@ trello.prototype.invokeGeneric = function(method, apiCall, args, callback) {
     args["token"] = this.token;
   }
   if (method == 'GET') {
+    if (options.path.indexOf("?") != -1) {
+      var parts = options.path.split("?");
+      var additionalArgs = parts[1];
+
+      options.path = parts[0];
+
+      for (var argName in additionalArgs) {
+        args[argName] = additionalArgs[argName];
+      }
+    }
+    
     options.path += "?" + querystring.stringify(args);
   } else {
     post_data = querystring.stringify(args);
