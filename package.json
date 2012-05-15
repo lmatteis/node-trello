@@ -1,16 +1,25 @@
 {
-  "name" : "node-trello"
-, "description" : "Node wrapper for Trello's HTTP API."
-, "tags" : ["http", "trello", "api", "web-service"]
-, "version" : "0.0.1"
-, "author" : "Luca Matteis <lmatteis@gmail.com>"
-, "repository" :
-  { "type" : "git"
-  , "url" : "http://github.com/lmatteis/node-trello.git"
+  "name" : "node-trello", 
+  "description" : "Node wrapper for Trello's HTTP API.", 
+  "tags" : ["http", "trello", "api", "web-service"], 
+  "version" : "0.0.2", 
+  "author" : "Luca Matteis <lmatteis@gmail.com>",
+  "contributors": [
+    {
+      "name": "Andrew Dunkman",
+      "email": "andrew@dunkman.org"
+    }
+  ], 
+  "repository" : { 
+    "type" : "git", 
+    "url" : "http://github.com/adunkman/node-trello.git"
+  }, 
+  "bugs" : { 
+      "url" : "http://github.com/adunkman/node-trello/issues" 
+  }, 
+  "engines" : [ "node >= 0.4.7" ], 
+  "main" : "./main",
+  "scripts": { 
+    "test": "node tests.js" 
   }
-, "bugs" :
-  { "url" : "http://github.com/lmatteis/node-trello/issues" }
-, "engines" : ["node >= 0.4.7"]
-, "main" : "./main"
-,"scripts": { "test": "node tests.js" }
 }
