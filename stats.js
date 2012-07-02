@@ -3,13 +3,11 @@ var fs = require('fs');
 var async = require("async");
 
 var api;
-var organization;
 
 var tick = function() { process.stdout.write('.') };
 
-var createStats = function(api_key, api_token, organization2) {
+var createStats = function(api_key, api_token) {
     api = new Trello(api_key, api_token);
-    organization = organization2;
 
 	async.waterfall([
 		getBoards,
@@ -27,15 +25,9 @@ var createStats = function(api_key, api_token, organization2) {
 }
 
 var getBoards = function(callback) {
-    api.get("/1/organization/" + organization + "/boards/all", function(err, response) {
-    	tick();
-    	var data = [];
-        if(err) throw err;
-        response.forEach(function(board) {
-        	data.push({ board_name : board.name, board_id: board.id})
-        });
-        callback(null, data);
-    });
+    var data = [];
+    data.push({ board_name : "A board name", board_id: 'a board id'})
+    callback(null, data);
 }
 
 var appendListAndCardInfos = function(data, callback) {
@@ -43,13 +35,16 @@ var appendListAndCardInfos = function(data, callback) {
 	async.forEach(
 		data, 
 		function(item, callback2) {
-			api.get('/1/board/' + item.board_id + '/lists/all', function(err, response) {
+			api.get('/1/board/' + item.board_id + '/lists/all', {'cards':'open', 'filter':'open'}, function(err, response) {
+				console.log('Found ' + response.length + " lists for board '" + item.board_name + "'.");
 				tick();
 				if(err) throw err;
 				for (var j=0; j < response.length; j++) {
 					var list_name = response[j].name;
 					var list_id = response[j].id;
-					for (var i = 0; i < response[j].cards.length; i++) {
+					if(response[j].cards)
+						console.log('Found ' + response[j].cards.length + " cards for list " + list_name);
+					for (var i = 0; response[j].cards && i < response[j].cards.length; i++) {
 						var card = response[j].cards[i];
 						var card_name = card.name;
 						var n = card_name.match(/\((\d)\)/);
@@ -86,10 +81,12 @@ var filterOnlyReleased = function(data, callback) {
 	callback(null, data2);
 }
 
+//Version schema for lists: 'Released: <Sprint-Range> <Versions>'
 var appendDateAndVersionFromListTitle = function(data, callback) {
 	var data2 = [];
 	for (var i = 0; i < data.length; i++) {
 		var regx = data[i].list_name.match(/Released: (.*?) (.*?)$/);
+		if(!regx) console.log('data[i].list_name ' + data[i].list_name)
 		data[i].sprint_range = regx[1];
 		data[i].versions = regx[2];
 		data2.push(data[i]);
@@ -138,8 +135,8 @@ var appendLabelInfosAndFeatureAreas = function(data, callback) {
 				if(response.labels.length > 0) {					
 					card.label = response.labels[0].name;
 				}
-				var featureArea = response.desc.match('FeatureArea:(.*)');
-				card.feature_area = featureArea ? featureArea[1] : '';
+				//var featureArea = response.desc.match('FeatureArea:(.*)');
+				//card.feature_area = featureArea ? featureArea[1] : '';
 				callback2(null);
 			});
 		},
@@ -174,7 +171,7 @@ var appendStartAndDone = function(data, callback) {
 				});
 				//fallback
 				if(!card.started) {
-					console.log("couldn't find a real start date using created card")
+					//console.log("couldn't find a real start date using created card")
 					api.get('/1/cards/' + card.card_id + '/actions', {filter:'createCard'}, function(err, response) {
 						if(err) throw err;
 						var list = response[0].data.list.name;
