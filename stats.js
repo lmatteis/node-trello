@@ -3,11 +3,13 @@ var fs = require('fs');
 var async = require("async");
 
 var api;
+var boards;
 
 var tick = function() { process.stdout.write('.') };
 
-var createStats = function(api_key, api_token) {
+var createStats = function(api_key, api_token, newBoards) {
     api = new Trello(api_key, api_token);
+    boards = newBoards;
 
 	async.waterfall([
 		getBoards,
@@ -25,9 +27,7 @@ var createStats = function(api_key, api_token) {
 }
 
 var getBoards = function(callback) {
-    var data = [];
-    data.push({ board_name : "A board name", board_id: 'a board id'})
-    callback(null, data);
+    callback(null, boards);
 }
 
 var appendListAndCardInfos = function(data, callback) {
