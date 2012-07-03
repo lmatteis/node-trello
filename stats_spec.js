@@ -1,28 +1,7 @@
 
 var SandboxedModule = require('sandboxed-module');
 
-describe('getBoards', function(){
-  var dummyApi = { 
-  get:function(path, callback) {
-      var board1 = {name: 'a first board name', id: 123};
-      var board2 = {name: 'a second board name', id: 456};
-      callback(null, [board1, board2]);          
-  }};
-  var sts = SandboxedModule.require('./stats', {
-    locals: {api: dummyApi},
-  });
-
-  it('should append board name and id to the data object', function(done){
-    sts.getBoards(function(error, data) {
-      expect(error).toEqual(null);
-      expect(data.length).toEqual(2);
-      expect(data[0].board_name).toEqual('a first board name');
-      expect(data[0].board_id).toEqual(123);
-      done();
-    });
-  });
-});
-
+/*
 describe('appendListAndCardInfos', function() {
   var dummyApi = {
     get:function(path, callback) {
@@ -35,6 +14,7 @@ describe('appendListAndCardInfos', function() {
   };
   var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
   var data = [{card_id: '123'}];
+
 
   it('should append list infos', function(done) {
     sts.appendListAndCardInfos(data, function(error, newData) {
@@ -53,8 +33,21 @@ describe('appendListAndCardInfos', function() {
       done();
     });
   });
-});
+  
 
+});
+*/
+
+/*
+describe('filterOnlyReleased', function() {
+  var sts = require('./stats');
+  it('should filter only released items', function(done) {
+    sts.filterOnlyReleased(data, function(error, newData) {
+      done();
+    })
+  })
+});
+*/
 
 describe('duplicateEntryForEachMember', function(){
   var sts = require('./stats');
@@ -99,13 +92,14 @@ describe('appendLabelInfosAndFeatureAreas', function () {
       done()
     });
   });
-
+/*
   it('should append feature areas', function(done) {
     sts.appendLabelInfosAndFeatureAreas(data, function(error, newData) {
       expect(newData[0].feature_area).toEqual('anarea ');
       done()
     });
   });
+*/
 });
 
 

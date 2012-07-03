@@ -275,3 +275,4 @@ exports.getBoards = module.exports.getBoards = getBoards;
 exports.duplicateEntryForEachMember = module.exports.duplicateEntryForEachMember = duplicateEntryForEachMember;
 exports.appendLabelInfosAndFeatureAreas = module.exports.appendLabelInfosAndFeatureAreas = appendLabelInfosAndFeatureAreas;
 exports.appendListAndCardInfos = module.exports.appendListAndCardInfos = appendListAndCardInfos;
+exports.filterOnlyReleased = module.exports.filterOnlyReleased = filterOnlyReleased;
