@@ -196,7 +196,6 @@ var appendStartAndDone = function(data, callback) {
 	);
 }
 
-//entries worked on during office hours: mo-fr 9-12 & 13-18
 var appendWorkingTime = function(data, callback) {
 	var data2 = [];
 	data.forEach(function(item) {
@@ -207,13 +206,20 @@ var appendWorkingTime = function(data, callback) {
 	callback(null, data2);
 }
 
+// worked on during office hours: mo-fr 9-12 & 13-18
 var calculateWorkingHours = function(started, finished) {
-	var s = moment(started).minutes(0).seconds(0).milliseconds(0);
+	var s = moment(started).clone().minutes(0).seconds(0).milliseconds(0);
 	var f = moment(finished).minutes(0).seconds(0).milliseconds(0);
 	var hours = 0;
 	while(s.unix() != f.unix()) {
+		var lunch = s.hours() == 12;
+		var morning = s.hours() < 9;
+		var night = s.hours() > 17;
+		var weekend = s.day() == 0 || s.day() == 6;
+		if(!lunch && !morning && !night && !weekend) {
+			hours++;
+		}
 		s.add('hours', 1);
-		hours++;
 	}
 	return hours;
 }

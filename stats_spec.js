@@ -123,21 +123,48 @@ describe('convertToCSVField', function(){
 describe('calculateWorkingHours', function() {
     var moment = require('moment');
     var sts = require('./stats');
+    var monday_at_8 = new Date(2012, 7-1, 2, 8, 00);
+    var monday_at_9 = new Date(2012, 7-1, 2, 9, 00);
+    var monday_at_10 = new Date(2012, 7-1, 2, 10, 00);
+    var monday_at_10_05 = new Date(2012, 7-1, 2, 10, 05);
+    var monday_at_11 = new Date(2012, 7-1, 2, 11, 00);
+    var monday_at_18 = new Date(2012, 7-1, 2, 18, 00);
+    var monday_at_19 = new Date(2012, 7-1, 2, 19, 00);
+    var friday_at_18 = new Date(2012, 7-1, 6, 18, 00);
+    var tuesday_at_9 = new Date(2012, 7-1, 3, 9, 00);
+    var next_monday_at_18 = new Date(2012, 7-1, 9, 18, 00);
+
 
     it('should return 0 if start and end are equal', function(){
-      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 10, 10, 00))).toEqual(0);
+      expect(sts.calculateWorkingHours(monday_at_10, monday_at_10)).toEqual(0);
     });
     it('should return 1 if diff is 1 hour', function(){
-      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 10, 11, 00))).toEqual(1);
+      expect(sts.calculateWorkingHours(monday_at_10, monday_at_11)).toEqual(1);
     });
+    
+
     it('should return 0 if diff is 5 minutes', function(){
-      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 10, 10, 05))).toEqual(0);
+      expect(sts.calculateWorkingHours(monday_at_10, monday_at_10_05)).toEqual(0);
     });
-    it('should return 24 if diff is 1 day', function(){
-      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 11, 10, 00))).toEqual(24);
+
+    it('should return 8 if started at 9 and ended at 18', function(){
+      expect(sts.calculateWorkingHours(monday_at_9, monday_at_18)).toEqual(8);
     });
-    it('should return 72 if diff is 3 days', function(){
-      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 11, 10, 00))).toEqual(24);
+    
+
+    it('should return 8 if started at 8 and ended at 18', function(){
+      expect(sts.calculateWorkingHours(monday_at_8, monday_at_18)).toEqual(8);
+    });
+    it('should return 8 if started at 9 and ended at 19', function(){
+      expect(sts.calculateWorkingHours(monday_at_9, monday_at_19)).toEqual(8);
+    });
+
+    it('should return 40 if started on monday 9 and ended friday 18', function(){
+      expect(sts.calculateWorkingHours(monday_at_9, friday_at_18)).toEqual(40);
+    });
+
+    it('should return 40 if started on tuesday 9 and ended monday next week 18', function(){
+      expect(sts.calculateWorkingHours(tuesday_at_9, next_monday_at_18)).toEqual(40);
     });
 
 
