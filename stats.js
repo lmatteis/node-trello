@@ -1,6 +1,7 @@
 var Trello = require('node-trello');
 var fs = require('fs');
 var async = require("async");
+var moment = require('moment');
 
 var api;
 var boards;
@@ -19,10 +20,11 @@ var createStats = function(api_key, api_token, newBoards) {
 		appendMemberInfos,
 		appendLabelInfosAndFeatureAreas,
 		appendStartAndDone,
+		appendWorkingTime,
 		duplicateEntryForEachMember,
 		convertToCSV,
-		writeFile,
-    	//print
+		writeFile
+//    	print
 	]);
 }
 
@@ -194,6 +196,28 @@ var appendStartAndDone = function(data, callback) {
 	);
 }
 
+//entries worked on during office hours: mo-fr 9-12 & 13-18
+var appendWorkingTime = function(data, callback) {
+	var data2 = [];
+	data.forEach(function(item) {
+		item.working_hours = calculateWorkingHours(item.started, item.finished);
+		console.log(item.working_hours);
+		data2.push(item);
+	});
+	callback(null, data2);
+}
+
+var calculateWorkingHours = function(started, finished) {
+	var s = moment(started).minutes(0).seconds(0).milliseconds(0);
+	var f = moment(finished).minutes(0).seconds(0).milliseconds(0);
+	var hours = 0;
+	while(s.unix() != f.unix()) {
+		s.add('hours', 1);
+		hours++;
+	}
+	return hours;
+}
+
 var duplicateEntryForMember = function(item, member) {
 	//clone object
 	var newItem = {};
@@ -276,3 +300,4 @@ exports.duplicateEntryForEachMember = module.exports.duplicateEntryForEachMember
 exports.appendLabelInfosAndFeatureAreas = module.exports.appendLabelInfosAndFeatureAreas = appendLabelInfosAndFeatureAreas;
 exports.appendListAndCardInfos = module.exports.appendListAndCardInfos = appendListAndCardInfos;
 exports.filterOnlyReleased = module.exports.filterOnlyReleased = filterOnlyReleased;
+exports.calculateWorkingHours = module.exports.calculateWorkingHours = calculateWorkingHours;

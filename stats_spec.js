@@ -120,4 +120,25 @@ describe('convertToCSVField', function(){
   });
 });
 
+describe('calculateWorkingHours', function() {
+    var moment = require('moment');
+    var sts = require('./stats');
 
+    it('should return 0 if start and end are equal', function(){
+      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 10, 10, 00))).toEqual(0);
+    });
+    it('should return 1 if diff is 1 hour', function(){
+      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 10, 11, 00))).toEqual(1);
+    });
+    it('should return 0 if diff is 5 minutes', function(){
+      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 10, 10, 05))).toEqual(0);
+    });
+    it('should return 24 if diff is 1 day', function(){
+      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 11, 10, 00))).toEqual(24);
+    });
+    it('should return 72 if diff is 3 days', function(){
+      expect(sts.calculateWorkingHours(new Date(2012, 10, 10, 10, 00), new Date(2012, 10, 11, 10, 00))).toEqual(24);
+    });
+
+
+});
