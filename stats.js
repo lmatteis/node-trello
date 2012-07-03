@@ -208,6 +208,7 @@ var appendWorkingTime = function(data, callback) {
 
 // worked on during office hours: mo-fr 9-12 & 13-18
 var calculateWorkingHours = function(started, finished) {
+	if(!started || !finished) return 0; //todo better data/bugfix
 	var s = moment(started).clone().minutes(0).seconds(0).milliseconds(0);
 	var f = moment(finished).minutes(0).seconds(0).milliseconds(0);
 	var hours = 0;
