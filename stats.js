@@ -37,7 +37,7 @@ var appendListAndCardInfos = function(data, callback) {
 	async.forEach(
 		data, 
 		function(item, callback2) {
-			api.get('/1/board/' + item.board_id + '/lists/all', {'cards':'open', 'filter':'open'}, function(err, response) {
+			api.get('/1/board/' + item.board_id + '/lists/open', {'cards':'open'}, function(err, response) {
 				console.log('Found ' + response.length + " lists for board '" + item.board_name + "'.");
 				tick();
 				if(err) throw err;
@@ -180,7 +180,7 @@ var appendStartAndDone = function(data, callback) {
 
 					if(list == 'Ready') readyDate = newDate;
 					
-					if(list == 'In Arbeit' || 'Ready') { // Why not 'klären'?
+					if(list == 'In Arbeit' || list == 'Ready') { // Why not 'klären'?
 						if(!smallestStartDate) {
 						 	smallestStartDate = newDate;
 						} else {
@@ -207,10 +207,16 @@ var appendStartAndDone = function(data, callback) {
 					//console.log("couldn't find a real start date using created card")
 					api.get('/1/cards/' + card.card_id + '/actions', {filter:'createCard'}, function(err, response) {
 						if(err) throw err;
-						var list = response[0].data.list.name;
-						var newDate = new Date(response[0].date);
-						card.started = newDate;
-						card.finished = newDate; // WTF?
+						if(response.length == 0) {
+							console.log('couldnt find date for card', card);
+							card.started = new Date;
+							card.finished = new Date;
+						} else {
+							var list = response[0].data.list.name;
+							var newDate = new Date(response[0].date);
+							card.started = newDate;
+							card.finished = newDate; // WTF?
+						}
 						data2.push(card);
 						callback2(null);
 					});
@@ -228,7 +234,6 @@ var appendWorkingTime = function(data, callback) {
 	var data2 = [];
 	data.forEach(function(item) {
 		item.working_hours = calculateWorkingHours(item.started, item.finished);
-		console.log(item.working_hours);
 		data2.push(item);
 	});
 	callback(null, data2);
