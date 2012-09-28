@@ -160,15 +160,18 @@ var appendStartAndDone = function(data, callback) {
 				card.finished = '';
 				response.forEach(function(action) {
 					var list = action.data.listAfter.name;
-					var startedAction = list == 'In Arbeit' || 'Ready';
-					var doneAction = list.indexOf('Released') == 0; //Some type of release
+					var startedAction = list == 'In Arbeit' || 'Ready'; // Why not 'klären'?
+					var doneAction = list.indexOf('Released') == 0 || list == 'Ready' ; //Some type of release
 					var newDate = new Date(action.date);
 					if(startedAction) {
 						if(!card.started) card.started = newDate;
-						if(card.started && newDate < card.started) card.started = newDate;	
+						//find the earliest possible
+						if(card.started && newDate < card.started) card.started = newDate;
 					}
 					if(doneAction && !card.finished) {
-						card.finished = newDate;
+						if(!card.finished) card.finished = newDate;
+						//find the latest possible
+						if(card.finished && newDate > card.finished) card.finished = newDate;
 					}
 				});
 				//fallback
