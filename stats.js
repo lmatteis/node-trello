@@ -153,42 +153,67 @@ var appendStartAndDone = function(data, callback) {
 	async.forEach(
 		data, 
 		function(card, callback2) {
-			api.get('/1/cards/' + card.card_id + '/actions', {filter:'updateCard:idList'}, function(err, response) {
+			api.get('/1/cards/' + card.card_id + '/actions', {filter:'updateCard:idList'}, function(err, actions) {
 				tick();
 				if(err) throw err;
 				card.started = '';
 				card.finished = '';
-				response.forEach(function(action) {
+
+				var smallestReleasedDate;
+				var readyDate;
+				var smallestStartDate;
+
+				//get actions
+				actions.forEach(function(action) {
 					var list = action.data.listAfter.name;
-					var startedAction = list == 'In Arbeit' || 'Ready'; // Why not 'klären'?
-					var doneAction = list.indexOf('Released') == 0 || list == 'Ready' ; //Some type of release
 					var newDate = new Date(action.date);
-					if(startedAction) {
-						if(!card.started) card.started = newDate;
-						//find the earliest possible
-						if(card.started && newDate < card.started) card.started = newDate;
+
+					if(list.indexOf('Released') == 0) {
+						if(!smallestReleasedDate) {
+							smallestReleasedDate = newDate;	
+						} else {
+							if(newDate < smallestReleasedDate) {
+								smallestReleasedDate = newDate;
+							}
+						}
 					}
-					if(doneAction && !card.finished) {
-						if(!card.finished) card.finished = newDate;
-						//find the latest possible
-						if(card.finished && newDate > card.finished) card.finished = newDate;
+
+					if(list == 'Ready') readyDate = newDate;
+					
+					if(list == 'In Arbeit' || 'Ready') { // Why not 'klären'?
+						if(!smallestStartDate) {
+						 	smallestStartDate = newDate;
+						} else {
+							if(newDate < smallestStartDate) {
+								smallestStartDate = newDate
+							}
+						}
 					}
 				});
-				//fallback
-				if(!card.started) {
+
+				//store best possible date
+				if(smallestReleasedDate) {
+					card.finished = smallestReleasedDate;
+				} else {
+					card.finished = readyDate
+				}
+
+
+				if(smallestStartDate) {
+					card.started = smallestStartDate;
+					data2.push(card);
+					callback2(null);
+				} else {
 					//console.log("couldn't find a real start date using created card")
 					api.get('/1/cards/' + card.card_id + '/actions', {filter:'createCard'}, function(err, response) {
 						if(err) throw err;
 						var list = response[0].data.list.name;
 						var newDate = new Date(response[0].date);
 						card.started = newDate;
-						card.finished = newDate;
+						card.finished = newDate; // WTF?
 						data2.push(card);
 						callback2(null);
 					});
-				} else {
-					data2.push(card);
-					callback2(null);
 				}
 			});
 		},
