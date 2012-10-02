@@ -341,3 +341,4 @@ exports.appendLabelInfosAndFeatureAreas = module.exports.appendLabelInfosAndFeat
 exports.appendListAndCardInfos = module.exports.appendListAndCardInfos = appendListAndCardInfos;
 exports.filterOnlyReleased = module.exports.filterOnlyReleased = filterOnlyReleased;
 exports.calculateWorkingHours = module.exports.calculateWorkingHours = calculateWorkingHours;
+exports.appendDateAndVersionFromListTitle = module.exports.appendDateAndVersionFromListTitle = appendDateAndVersionFromListTitle;

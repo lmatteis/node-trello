@@ -51,6 +51,21 @@ describe('filterOnlyReleased', function() {
   })
 });
 
+describe('appendDateAndVersionFromListTitle', function() {
+  var sts = require('./stats');
+  var data = [
+    {card_id: '123', list_name: 'Released: 2012-10-10--2020-09-09 v.23.platform'}
+  ];
+  it('should append date', function(done) {
+    sts.appendDateAndVersionFromListTitle(data, function(error, newData) {
+      expect(newData.length).toEqual(1);
+      expect(newData[0].sprint_range).toEqual('2012-10-10--2020-09-09');
+      expect(newData[0].versions).toEqual('v.23.platform');
+      done();
+    })
+  })
+});
+
 describe('duplicateEntryForEachMember', function(){
   var sts = require('./stats');
   var data = [{card_id: '123', member_names : ['matt', 'dave']}];
