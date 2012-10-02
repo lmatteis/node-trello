@@ -9,7 +9,7 @@ describe('appendListAndCardInfos', function() {
       var card2 = {name : 'a second card (2)', id: 222, idMembers: ['abc', 'opc']};
       var list1 = {name: 'a first list', id: 123, cards : [card1]};
       var list2 = {name: 'a second list', id: 345, cards : [card2]};
-      callback(null, [list1, list2]);          
+      callback(null, [list1, list2]);
     }
   };
   var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
@@ -33,7 +33,6 @@ describe('appendListAndCardInfos', function() {
       done();
     });
   });
-
 
 });
 
@@ -169,6 +168,5 @@ describe('calculateWorkingHours', function() {
     it('should return 40 if started on tuesday 9 and ended monday next week 18', function(){
       expect(sts.calculateWorkingHours(tuesday_at_9, next_monday_at_18)).toEqual(40);
     });
-
 
 });
