@@ -64,7 +64,24 @@ describe('appendDateAndVersionFromListTitle', function() {
   })
 });
 
-//TODO tests for appendMemberInfos
+describe('appendMemberInfos', function() {
+  var dummyApi = {
+    get:function(path, callback) {
+      var member = {fullName: 'franky'};
+      callback(null, member);          
+    }
+  };
+  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
+  var data = [{idMembers: ['123', '234']}];
+
+  it('should append member infos', function(done) {
+    sts.appendMemberInfos(data, function(error, newData) {
+      expect(newData.length).toEqual(1);
+      expect(newData[0].member_names).toEqual(['franky','franky']);
+      done();
+    })
+  })
+});
 
 
 describe('appendLabelInfosAndFeatureAreas', function () {
