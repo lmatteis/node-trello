@@ -1,7 +1,6 @@
 
 var SandboxedModule = require('sandboxed-module');
 
-
 describe('appendListAndCardInfos', function() {
   var dummyApi = {
     get:function(path, filter, callback) {
@@ -33,7 +32,6 @@ describe('appendListAndCardInfos', function() {
       done();
     });
   });
-
 });
 
 describe('filterOnlyReleased', function() {
@@ -66,6 +64,82 @@ describe('appendDateAndVersionFromListTitle', function() {
   })
 });
 
+//TODO tests for appendMemberInfos
+
+
+describe('appendLabelInfosAndFeatureAreas', function () {
+  var dummyApi = {
+    get:function(path, callback) {
+      var card = {name: 'a first board name', id: 123, labels: [{name:'a label'}, {name:'a 2nd label'}], desc: 'This is a description. FeatureArea:anarea '};
+      callback(null, card);          
+    }
+  };
+  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
+  var data = [{card_id: '123'}];
+
+  it('should append labels', function (done) {
+    sts.appendLabelInfosAndFeatureAreas(data, function(error, newData) {
+      expect(newData[0].label).toEqual('a label');
+      //expect(newData[1].label).toEqual('a 2nd label');
+      done()
+    });
+  });
+/*
+  it('should append feature areas', function(done) {
+    sts.appendLabelInfosAndFeatureAreas(data, function(error, newData) {
+      expect(newData[0].feature_area).toEqual('anarea ');
+      done()
+    });
+*/
+});
+
+
+//TODO Tests for appendStartAndDone
+
+describe('calculateWorkingHours', function() {
+    var moment = require('moment');
+    var sts = require('./stats');
+    var monday_at_8 = new Date(2012, 7-1, 2, 8, 00);
+    var monday_at_9 = new Date(2012, 7-1, 2, 9, 00);
+    var monday_at_10 = new Date(2012, 7-1, 2, 10, 00);
+    var monday_at_10_05 = new Date(2012, 7-1, 2, 10, 05);
+    var monday_at_11 = new Date(2012, 7-1, 2, 11, 00);
+    var monday_at_18 = new Date(2012, 7-1, 2, 18, 00);
+    var monday_at_19 = new Date(2012, 7-1, 2, 19, 00);
+    var friday_at_18 = new Date(2012, 7-1, 6, 18, 00);
+    var tuesday_at_9 = new Date(2012, 7-1, 3, 9, 00);
+    var next_monday_at_18 = new Date(2012, 7-1, 9, 18, 00);
+
+
+    it('should return 0 if start and end are equal', function(){
+      expect(sts.calculateWorkingHours(monday_at_10, monday_at_10)).toEqual(0);
+    });
+    it('should return 1 if diff is 1 hour', function(){
+      expect(sts.calculateWorkingHours(monday_at_10, monday_at_11)).toEqual(1);
+    });
+    it('should return 0 if diff is 5 minutes', function(){
+      expect(sts.calculateWorkingHours(monday_at_10, monday_at_10_05)).toEqual(0);
+    });
+    it('should return 8 if started at 9 and ended at 18', function(){
+      expect(sts.calculateWorkingHours(monday_at_9, monday_at_18)).toEqual(8);
+    });
+    it('should return 8 if started at 8 and ended at 18', function(){
+      expect(sts.calculateWorkingHours(monday_at_8, monday_at_18)).toEqual(8);
+    });
+    it('should return 8 if started at 9 and ended at 19', function(){
+      expect(sts.calculateWorkingHours(monday_at_9, monday_at_19)).toEqual(8);
+    });
+
+    it('should return 40 if started on monday 9 and ended friday 18', function(){
+      expect(sts.calculateWorkingHours(monday_at_9, friday_at_18)).toEqual(40);
+    });
+
+    it('should return 40 if started on tuesday 9 and ended monday next week 18', function(){
+      expect(sts.calculateWorkingHours(tuesday_at_9, next_monday_at_18)).toEqual(40);
+    });
+
+});
+
 describe('duplicateEntryForEachMember', function(){
   var sts = require('./stats');
   var data = [{card_id: '123', member_names : ['matt', 'dave']}];
@@ -92,34 +166,6 @@ describe('duplicateEntryForEachMember', function(){
   });
 });
 
-describe('appendLabelInfosAndFeatureAreas', function () {
-  var dummyApi = {
-    get:function(path, callback) {
-      var card = {name: 'a first board name', id: 123, labels: [{name:'a label'}, {name:'a 2nd label'}], desc: 'This is a description. FeatureArea:anarea '};
-      callback(null, card);          
-    }
-  };
-  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
-  var data = [{card_id: '123'}];
-
-  it('should append labels', function (done) {
-    sts.appendLabelInfosAndFeatureAreas(data, function(error, newData) {
-      expect(newData[0].label).toEqual('a label');
-      //expect(newData[1].label).toEqual('a 2nd label');
-      done()
-    });
-  });
-/*
-  it('should append feature areas', function(done) {
-    sts.appendLabelInfosAndFeatureAreas(data, function(error, newData) {
-      expect(newData[0].feature_area).toEqual('anarea ');
-      done()
-    });
-  });
-*/
-});
-
-
 describe('convertToCSVField', function(){
   var sts = require('./stats');
 
@@ -137,51 +183,3 @@ describe('convertToCSVField', function(){
   });
 });
 
-describe('calculateWorkingHours', function() {
-    var moment = require('moment');
-    var sts = require('./stats');
-    var monday_at_8 = new Date(2012, 7-1, 2, 8, 00);
-    var monday_at_9 = new Date(2012, 7-1, 2, 9, 00);
-    var monday_at_10 = new Date(2012, 7-1, 2, 10, 00);
-    var monday_at_10_05 = new Date(2012, 7-1, 2, 10, 05);
-    var monday_at_11 = new Date(2012, 7-1, 2, 11, 00);
-    var monday_at_18 = new Date(2012, 7-1, 2, 18, 00);
-    var monday_at_19 = new Date(2012, 7-1, 2, 19, 00);
-    var friday_at_18 = new Date(2012, 7-1, 6, 18, 00);
-    var tuesday_at_9 = new Date(2012, 7-1, 3, 9, 00);
-    var next_monday_at_18 = new Date(2012, 7-1, 9, 18, 00);
-
-
-    it('should return 0 if start and end are equal', function(){
-      expect(sts.calculateWorkingHours(monday_at_10, monday_at_10)).toEqual(0);
-    });
-    it('should return 1 if diff is 1 hour', function(){
-      expect(sts.calculateWorkingHours(monday_at_10, monday_at_11)).toEqual(1);
-    });
-    
-
-    it('should return 0 if diff is 5 minutes', function(){
-      expect(sts.calculateWorkingHours(monday_at_10, monday_at_10_05)).toEqual(0);
-    });
-
-    it('should return 8 if started at 9 and ended at 18', function(){
-      expect(sts.calculateWorkingHours(monday_at_9, monday_at_18)).toEqual(8);
-    });
-    
-
-    it('should return 8 if started at 8 and ended at 18', function(){
-      expect(sts.calculateWorkingHours(monday_at_8, monday_at_18)).toEqual(8);
-    });
-    it('should return 8 if started at 9 and ended at 19', function(){
-      expect(sts.calculateWorkingHours(monday_at_9, monday_at_19)).toEqual(8);
-    });
-
-    it('should return 40 if started on monday 9 and ended friday 18', function(){
-      expect(sts.calculateWorkingHours(monday_at_9, friday_at_18)).toEqual(40);
-    });
-
-    it('should return 40 if started on tuesday 9 and ended monday next week 18', function(){
-      expect(sts.calculateWorkingHours(tuesday_at_9, next_monday_at_18)).toEqual(40);
-    });
-
-});
