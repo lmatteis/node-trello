@@ -74,10 +74,11 @@ describe('appendMemberInfos', function() {
   var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
   var data = [{idMembers: ['123', '234']}];
 
-  it('should append member infos', function(done) {
+  it('should append member names', function(done) {
     sts.appendMemberInfos(data, function(error, newData) {
       expect(newData.length).toEqual(1);
       expect(newData[0].member_names).toEqual(['franky','franky']);
+      expect(newData[0].idMembers).toEqual(null);
       done();
     })
   })
