@@ -38,16 +38,20 @@ describe('appendListAndCardInfos', function() {
 });
 */
 
-/*
 describe('filterOnlyReleased', function() {
   var sts = require('./stats');
+  var data = [
+    {card_id: '123', list_name: 'not released'},
+    {card_id: '124', list_name: 'Released:'}
+  ];
   it('should filter only released items', function(done) {
     sts.filterOnlyReleased(data, function(error, newData) {
+      expect(newData.length).toEqual(1);
+      expect(newData[0].card_id).toEqual('124');
       done();
     })
   })
 });
-*/
 
 describe('duplicateEntryForEachMember', function(){
   var sts = require('./stats');
