@@ -1,10 +1,10 @@
 
 var SandboxedModule = require('sandboxed-module');
 
-/*
+
 describe('appendListAndCardInfos', function() {
   var dummyApi = {
-    get:function(path, callback) {
+    get:function(path, filter, callback) {
       var card1 = {name : 'a first card', id: 111};
       var card2 = {name : 'a second card (2)', id: 222, idMembers: ['abc', 'opc']};
       var list1 = {name: 'a first list', id: 123, cards : [card1]};
@@ -15,7 +15,6 @@ describe('appendListAndCardInfos', function() {
   var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
   var data = [{card_id: '123'}];
 
-
   it('should append list infos', function(done) {
     sts.appendListAndCardInfos(data, function(error, newData) {
       expect(newData[0].list_name).toEqual('a first list');
@@ -23,6 +22,7 @@ describe('appendListAndCardInfos', function() {
       done();
     });
   });
+
   it('should append card infos', function(done) {
     sts.appendListAndCardInfos(data, function(error, newData) {
       expect(newData[0].card_name).toEqual('a first card');
@@ -33,10 +33,9 @@ describe('appendListAndCardInfos', function() {
       done();
     });
   });
-  
+
 
 });
-*/
 
 describe('filterOnlyReleased', function() {
   var sts = require('./stats');
