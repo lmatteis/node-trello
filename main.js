@@ -44,10 +44,13 @@ trello.prototype.invokeGeneric = function(method, apiCall, args, callback) {
     });
     res.on("end", function() {
       if(res.statusCode !== 200) {
-        callback(data);
-      } else {
+        
+        callback(apiCall, data, null);
+      } 
+      else {
+        
         var j = JSON.parse(data);
-        callback(false, j);
+        callback(apiCall, false, j);
       }
     });
   });
