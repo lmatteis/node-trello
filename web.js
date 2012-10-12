@@ -22,6 +22,7 @@ app.all('*', basicAuth);
 // Routes
 app.get('/', routes.index);
 app.get('/stats', routes.stats);
+app.get('/statscsv', routes.statscsv);
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
