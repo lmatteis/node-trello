@@ -35,7 +35,7 @@ var appendListAndCardInfos = function(data, callback) {
 		data, 
 		function(item, callback2) {
 			api.get('/1/board/' + item.board_id + '/lists/open', {'cards':'open'}, function(err, response) {
-				console.log('Found ' + response.length + " lists for board '" + item.board_name + "'.");
+				console.log('Found ' + response.length + ' lists');
 				tick();
 				if(err) throw err;
 				for (var j=0; j < response.length; j++) {
@@ -50,7 +50,6 @@ var appendListAndCardInfos = function(data, callback) {
 						var estimate = n ? n[1] : 0;
 						var idMembers = card.idMembers;
 						data2.push({ 
-							board_name : item.board_name, 
 							//board_id: item.board_id, 
 							card_id: card.id, 
 							list_name : list_name,

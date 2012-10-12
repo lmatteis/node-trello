@@ -6,10 +6,10 @@ exports.index = function(req, res){
   res.render('index', { title: 'Express' })
 };
 
-var boards = [];
-boards.push({ board_name : "Team XXX", board_id: '50350ea44ac40fb64b0044f4'})
 
 exports.stats = function(req, res){
+  var boards = [{ board_id: req.query.board_id }];
+  
   stats.createStats(config.api_key, config.api_token, boards, function(data) {
     //to array
     var array = [];
@@ -26,6 +26,8 @@ exports.stats = function(req, res){
 };
 
 exports.statscsv = function(request, response) {
+  var boards = [{ board_id: request.query.board_id }];
+  
 	stats.createStats(config.api_key, config.api_token, boards, function(data) {
       csv.convertToCSV(data, function(err, csv) {
         response.set('Content-Type', 'text/csv');
