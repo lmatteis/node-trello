@@ -8,7 +8,7 @@ var boards;
 
 var tick = function() { process.stdout.write('.') };
 
-var createStats = function(api_key, api_token, newBoards) {
+var createStats = function(api_key, api_token, newBoards, callback) {
     api = new Trello(api_key, api_token);
     boards = newBoards;
 
@@ -23,8 +23,7 @@ var createStats = function(api_key, api_token, newBoards) {
 		appendWorkingTime,
 		duplicateEntryForEachMember,
 		convertToCSV,
-		writeFile
-//    	print
+		callback
 	]);
 }
 
@@ -307,17 +306,6 @@ var convertToCSV = function(data, callback) {
     callback(null, csv);
 }
 
-var writeFile = function(data, callback) {
-	var filename = 'backup-data/' + new Date().toString()  + ".csv";
-    fs.writeFile(filename, data, function(err) {
-        if(err) {
-            console.log(err);
-        } else {
-            console.log("\nSaved to " + filename);
-        }
-        callback(null);
-    });
-}
 
 //TODO: preserve quotes, commata and new lines. use csv-standard
 var convertToCSVField = function (field) {
@@ -327,9 +315,6 @@ var convertToCSVField = function (field) {
     return field;
 }
 
-var print = function(data, callback) {
-	console.log(data)
-}
 
 exports.createStats = module.exports.createStats = createStats;
 
