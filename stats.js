@@ -1,5 +1,4 @@
 var Trello = require('node-trello');
-var fs = require('fs');
 var async = require("async");
 var moment = require('moment');
 
