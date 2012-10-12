@@ -3,6 +3,10 @@ var stats = require('./stats');
 
 var app = express.createServer(express.logger());
 
+var basicAuth = express.basicAuth(function(username, password) {
+  return (password == 'todo');
+}, 'Restrict area, please identify');
+app.all('*', basicAuth);
 
 //config
 var api_key = process.env.TRELLO_API_KEY;
