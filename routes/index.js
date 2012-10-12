@@ -18,10 +18,8 @@ exports.stats = function(req, res){
       for(key in item) {
         item2.push(item[key] + "")
       }
-      if(item2.length == 12) //fix me
-        array.push(item2);
+      array.push(item2);        
     });
-    console.log(array);
 
     res.render('stats', {'data': JSON.stringify(array)})
   })
