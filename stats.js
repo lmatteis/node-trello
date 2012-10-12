@@ -201,11 +201,11 @@ var appendStartAndDone = function(data, callback) {
 					data2.push(card);
 					callback2(null);
 				} else {
-					console.log("couldn't find a real start date using created card")
+					//console.log("couldn't find a real start date using created card")
 					api.get('/1/cards/' + card.card_id + '/actions', {filter:'createCard'}, function(err, response) {
 						if(err) throw err;
 						if(response.length == 0) {
-							console.log('couldnt find date for card', card);
+							//console.log('couldnt find date for card', card);
 							card.started = new Date;
 							card.finished = new Date;
 						} else {
