@@ -1,5 +1,16 @@
 var stats = require('./stats');
 
+var writeFile = function(data, callback) {
+	var filename = 'backup-data/' + new Date().toString()  + ".csv";
+    fs.writeFile(filename, data, function(err) {
+        if(err) {
+            console.log(err);
+        } else {
+            console.log("\nSaved to " + filename);
+        }
+        callback(null);
+    });
+}
 
 //config
 var api_key = '<api_key>';
@@ -8,4 +19,4 @@ var boards = [];
 boards.push({ board_name : "<a name>", board_id: '<board_id>'})
 
 //usage
-stats.createStats(api_key, api_token, boards);
+stats.createStats(api_key, api_token, boards, writeFile);
