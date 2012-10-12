@@ -21,6 +21,7 @@ app.all('*', basicAuth);
 
 // Routes
 app.get('/', routes.index);
+app.get('/dashboard', routes.dashboard);
 app.get('/stats', routes.stats);
 app.get('/statscsv', routes.statscsv);
 

@@ -30,3 +30,7 @@ exports.statscsv = function(request, response) {
       }) 
 	})
 };
+
+exports.dashboard = function(req, res){
+	res.render('dashboard', {"title": "Dashboard", "api_key": config.api_key});
+}
