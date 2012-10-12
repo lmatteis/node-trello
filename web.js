@@ -3,7 +3,7 @@ var express = require('express');
 var app = express.createServer(express.logger());
 
 app.get('/', function(request, response) {
-  response.send('Trello Stats ist das coolste Projekt!');
+  response.send('Trello Stats ist das coolste Projekt, EVER!');
 });
 
 var port = process.env.PORT || 5000;
