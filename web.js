@@ -1,29 +1,27 @@
-var express = require('express');
-var stats = require('./stats');
-var config = require('./config');
+var express = require('express'),
+ 	config = require('./config'),
+ 	routes = require('./routes');
 
 var app = express(express.logger());
+
+app.configure(function(){
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.set('view options', {layout: false});
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
+});
 
 var basicAuth = express.basicAuth(function(username, password) {
   return (password == config.password);
 }, 'Restrict area, please identify');
 app.all('*', basicAuth);
 
-var boards = [];
-boards.push({ board_name : "Team XXX", board_id: '50350ea44ac40fb64b0044f4'})
-
-app.get('/', function(request, response) {
-  response.send('Trello Stats ist das coolste Projekt, EVER!');
-});
-
-app.get('/stats', function(request, response) {
-	stats.createStats(config.api_key, config.api_token, boards, function(data) {
-  		response.set('Content-Type', 'text/csv');
-  		var filename = new Date().toString() + ".csv"
-  		response.set('Content-Disposition', 'attachment; filename="' + filename + '"');
-  		response.send(data);
-	})
-});
+// Routes
+app.get('/', routes.index);
+app.get('/stats', routes.stats);
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
