@@ -18,7 +18,6 @@ html
         .hero-unit
           h1 Ugh.. well..!
           br
-          p= data.length
           #table_div
 
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js")
@@ -36,13 +35,13 @@ html
         dt.addColumn('string', 'finished');
         dt.addColumn('string', 'started');
         dt.addColumn('string', 'label');
-        dt.addColumn('string', 'started');
         dt.addColumn('string', 'versions');
         dt.addColumn('string', 'sprint_range');
         dt.addColumn('string', 'estimate');
         dt.addColumn('string', 'card_name');
         dt.addColumn('string', 'list_name');
         dt.addColumn('string', 'card_id');
+        dt.addColumn('string', 'Board');
         dt.addColumn('string', 'member');
         dt.addRows(data);
 

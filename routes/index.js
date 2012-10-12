@@ -16,7 +16,7 @@ exports.stats = function(req, res){
     data.forEach(function(item) {
       var item2 = [];
       for(key in item) {
-        item2.push(item[key] + "-") //fix me
+        item2.push(item[key] + "")
       }
       if(item2.length == 12) //fix me
         array.push(item2);
