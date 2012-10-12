@@ -20,7 +20,12 @@ app.get('/stats', function(request, response) {
 	})
 });
 
-var port = process.env.PORT || 5000;
+// try to find a resource file
+app.get('*', function(request, response) {
+	response.sendfile("./public/" + request.route.params[0]);
+});
+
+var port = process.env.PORT || 5001;
 app.listen(port, function() {
   console.log("Listening on2 " + port);
 });
