@@ -11,12 +11,19 @@ boards.push({ board_name : "Team XXX", board_id: '50350ea44ac40fb64b0044f4'})
 
 exports.stats = function(req, res){
   stats.createStats(config.api_key, config.api_token, boards, function(data) {
-    //extract titles
-    var titles = [];
-    for(key in data[0]) {
-        titles.push(key);
-    }
-    res.render('stats', {'data':data, 'titles':titles})
+    //to array
+    var array = [];
+    data.forEach(function(item) {
+      var item2 = [];
+      for(key in item) {
+        item2.push(item[key] + "-") //fix me
+      }
+      if(item2.length == 12) //fix me
+        array.push(item2);
+    });
+    console.log(array);
+
+    res.render('stats', {'data': JSON.stringify(array)})
   })
 };
 
