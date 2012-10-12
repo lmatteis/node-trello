@@ -1,11 +1,12 @@
 var stats = require('./stats');
 var fs = require('fs');
+var config = require('./config');
 
 
 //config
-var api_key = process.env.TRELLO_API_KEY;
+var api_key = config.api_key;
 //https://trello.com/1/authorize?key=4b65fb9aa0db5d712f29917366c6edf7&name=My+Application&expiration=30days&response_type=token
-var api_token = process.env.TRELLO_API_TOKEN;
+var api_token = config.api_token;
 
 var boards = [];
 boards.push({ board_name : "A Team", board_id: '4f681edb801cba2d41140478'})
