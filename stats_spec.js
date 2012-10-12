@@ -111,8 +111,24 @@ describe('appendLabelInfosAndFeatureAreas', function () {
 */
 });
 
+//TODO weiter ausbauen
+describe('appendStartAndDone', function() {
+  var dummyApi = {
+    get:function(path, filter, callback) {
+      var actions = [{data: {listAfter: {name: 'In Arbeit'} }, date: new Date()}];
+      callback(null, actions);
+    }
+  };
+  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
+  var data = [{idMembers: ['123', '234']}];
 
-//TODO Tests for appendStartAndDone
+  it('should append member names', function(done) {
+    sts.appendStartAndDone(data, function(error, newData) {
+      expect(newData.length).toEqual(1);
+      done();
+    })
+  })
+});
 
 describe('calculateWorkingHours', function() {
     var moment = require('moment');

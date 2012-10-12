@@ -204,7 +204,7 @@ var appendStartAndDone = function(data, callback) {
 					data2.push(card);
 					callback2(null);
 				} else {
-					//console.log("couldn't find a real start date using created card")
+					console.log("couldn't find a real start date using created card")
 					api.get('/1/cards/' + card.card_id + '/actions', {filter:'createCard'}, function(err, response) {
 						if(err) throw err;
 						if(response.length == 0) {
@@ -343,3 +343,4 @@ exports.filterOnlyReleased = module.exports.filterOnlyReleased = filterOnlyRelea
 exports.calculateWorkingHours = module.exports.calculateWorkingHours = calculateWorkingHours;
 exports.appendDateAndVersionFromListTitle = module.exports.appendDateAndVersionFromListTitle = appendDateAndVersionFromListTitle;
 exports.appendMemberInfos = module.exports.appendMemberInfos = appendMemberInfos;
+exports.appendStartAndDone = module.exports.appendStartAndDone = appendStartAndDone;
