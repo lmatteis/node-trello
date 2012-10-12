@@ -13,4 +13,13 @@
   , "async": ">0.0.0"
   , "sandboxed-module": ">0.0.0"
   }
+, "dependencies": {
+    "express": "3.x"
+  }
+,
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  }
+
 }
