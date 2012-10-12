@@ -4,6 +4,11 @@ var config = require('./config');
 
 var app = express.createServer(express.logger());
 
+var basicAuth = express.basicAuth(function(username, password) {
+  return (password == config.password);
+}, 'Restrict area, please identify');
+app.all('*', basicAuth);
+
 var boards = [];
 boards.push({ board_name : "Team XXX", board_id: '50350ea44ac40fb64b0044f4'})
 
