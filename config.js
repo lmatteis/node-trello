@@ -15,5 +15,5 @@ if (process.env.TRELLO_API_TOKEN) {
 	api_token = "";
 }
 
-exports api_key = api_key;
-exports api_token = api_token;
+exports.api_key = api_key;
+exports.api_token = api_token;
