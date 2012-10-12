@@ -15,5 +15,13 @@ if (process.env.TRELLO_API_TOKEN) {
 	api_token = "";
 }
 
+if (process.env.TRELLO_STATS_PASSWORD) {
+	password = process.env.TRELLO_STATS_PASSWORD;
+} else {
+	console.log("Didn't find Password for Trellostats using empty");
+	password = "";
+}
+
 exports.api_key = api_key;
 exports.api_token = api_token;
+exports.password = password;

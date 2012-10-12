@@ -5,7 +5,7 @@ var config = require('./config');
 var app = express.createServer(express.logger());
 
 var basicAuth = express.basicAuth(function(username, password) {
-  return (password == 'todo');
+  return (password == config.password);
 }, 'Restrict area, please identify');
 app.all('*', basicAuth);
 
