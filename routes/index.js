@@ -16,3 +16,7 @@ exports.stats = function(request, response) {
   		response.send(data);
 	})
 };
+
+exports.dashboard = function(req, res){
+	res.render('dashboard', {"title": "Dashboard", "api_key": config.api_key});
+}
