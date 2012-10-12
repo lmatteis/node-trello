@@ -2,7 +2,7 @@ var express = require('express');
 var stats = require('./stats');
 var config = require('./config');
 
-var app = express.createServer(express.logger());
+var app = express(express.logger());
 
 var basicAuth = express.basicAuth(function(username, password) {
   return (password == config.password);
@@ -27,5 +27,5 @@ app.get('/stats', function(request, response) {
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
-  console.log("Listening on2 " + port);
+  console.log("Listening on " + port);
 });
