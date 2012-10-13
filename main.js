@@ -1,4 +1,4 @@
-var stats = require('./stats');
+var stats = require('./lib/stats');
 var fs = require('fs');
 var config = require('./config');
 

@@ -1,5 +1,5 @@
 describe('convertToCSVField', function(){
-  var csv = require('./csv');
+  var csv = require('../lib/csv');
 
   it('should return a simple string unchanged', function(){
     expect(csv.convertToCSVField('A simple String')).toEqual('A simple String');
