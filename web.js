@@ -24,6 +24,7 @@ app.get('/', routes.index);
 app.get('/dashboard', routes.dashboard);
 app.get('/stats', routes.stats);
 app.get('/statscsv', routes.statscsv);
+app.get('/api', routes.api);
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
