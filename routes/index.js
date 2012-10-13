@@ -10,9 +10,8 @@ exports.index = function(req, res){
 
 exports.api = function(req, res){
   res.set('Content-Type', 'text/json');
-  var team = req.query.team;
-
-  sprint.getsprints(config.api_key, config.api_token, '4f681edb801cba2d41140478', function(err, data) {
+  var boardid = req.query.boardid;
+  sprint.getsprints(config.api_key, config.api_token, boardid, function(err, data) {
     if(err) {
       res.statusCode = 500;
       res.end(err.message)
