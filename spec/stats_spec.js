@@ -11,7 +11,7 @@ describe('appendListAndCardInfos', function() {
       callback(null, [list1, list2]);
     }
   };
-  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
+  var sts = SandboxedModule.require('../lib/stats', { locals: {api: dummyApi} });
   var data = [{card_id: '123'}];
 
   it('should append list infos', function(done) {
@@ -35,7 +35,7 @@ describe('appendListAndCardInfos', function() {
 });
 
 describe('filterOnlyReleased', function() {
-  var sts = require('./stats');
+  var sts = require('../lib/stats');
   var data = [
     {card_id: '123', list_name: 'not released'},
     {card_id: '124', list_name: 'Released:'}
@@ -50,7 +50,7 @@ describe('filterOnlyReleased', function() {
 });
 
 describe('appendDateAndVersionFromListTitle', function() {
-  var sts = require('./stats');
+  var sts = require('../lib/stats');
   var data = [
     {card_id: '123', list_name: 'Released: 2012-10-10--2020-09-09 v.23.platform'}
   ];
@@ -71,7 +71,7 @@ describe('appendMemberInfos', function() {
       callback(null, member);          
     }
   };
-  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
+  var sts = SandboxedModule.require('../lib/stats', { locals: {api: dummyApi} });
   var data = [{idMembers: ['123', '234']}];
 
   it('should append member names', function(done) {
@@ -92,7 +92,7 @@ describe('appendLabelInfosAndFeatureAreas', function () {
       callback(null, card);          
     }
   };
-  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
+  var sts = SandboxedModule.require('../lib/stats', { locals: {api: dummyApi} });
   var data = [{card_id: '123'}];
 
   it('should append labels', function (done) {
@@ -119,7 +119,7 @@ describe('appendStartAndDone', function() {
       callback(null, actions);
     }
   };
-  var sts = SandboxedModule.require('./stats', { locals: {api: dummyApi} });
+  var sts = SandboxedModule.require('../lib/stats', { locals: {api: dummyApi} });
   var data = [{idMembers: ['123', '234']}];
 
   it('should append member names', function(done) {
@@ -132,7 +132,7 @@ describe('appendStartAndDone', function() {
 
 describe('calculateWorkingHours', function() {
     var moment = require('moment');
-    var sts = require('./stats');
+    var sts = require('../lib/stats');
     var monday_at_8 = new Date(2012, 7-1, 2, 8, 00);
     var monday_at_9 = new Date(2012, 7-1, 2, 9, 00);
     var monday_at_10 = new Date(2012, 7-1, 2, 10, 00);
@@ -175,7 +175,7 @@ describe('calculateWorkingHours', function() {
 });
 
 describe('duplicateEntryForEachMember', function(){
-  var sts = require('./stats');
+  var sts = require('../lib/stats');
   var data = [{card_id: '123', member_names : ['matt', 'dave']}];
 
   it('should duplicate an entry with two members assigned', function(done){

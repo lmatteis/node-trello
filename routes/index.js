@@ -1,6 +1,6 @@
-var stats = require('../stats'),
+var stats = require('../lib/stats'),
   config = require('../config'),
- 	csv = require('../csv');
+ 	csv = require('../lib/csv');
 
 exports.index = function(req, res){
   res.render('index', { title: 'Express' })
