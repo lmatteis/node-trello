@@ -1,7 +1,7 @@
 window.createBurnupChart = (selector, width, height, sprintData)->
 	d3 = window.d3
 
-	padding = 
+	padding=
 		top: 10
 		left: 30
 		bottom: 20
@@ -13,69 +13,89 @@ window.createBurnupChart = (selector, width, height, sprintData)->
 	canvas.attr('width', width)
 	canvas.attr('height', height)
 
-	# -- fixing up Date
-	Date.prototype.addDays = (daysCount)->
-		result = new Date()
-		result.setDate(@getDate() + daysCount)
-		return result
+	# -- prepare data
+	sprintDaysAll = sprintData.days
+
+	for day in sprintDaysAll
+		day.date = new Date(day.day)
+
+	daysWorkedOn = []
+	for day in sprintDaysAll
+		daysWorkedOn.push(day) if day.totalpoints?
+
+	donepoints = []
+	for day in sprintDaysAll
+		donepoints.push(day.donepoints)
+
+	start = sprintDaysAll[0].date
+	end = sprintDaysAll[sprintDaysAll.length-1].date
+
 
 	# -- scales
+	d = [start, end]
+	r = [padding.left, width - padding.right]
+
 	timeScale = d3.time.scale()
-	timeScale.domain([sprintData.start, sprintData.end])
-	timeScale.range([padding.left, width - padding.right])
+		.domain(d)
+		.range(r)
+
+
+	console.log d
+	console.log daysWorkedOn[1].date
+	console.log timeScale(daysWorkedOn[1].date)
+	console.log r
 
 	pointScale = d3.scale.linear()
-	pointScale.domain([0, d3.max(sprintData.donePointsPerDay)])
-	pointScale.range([height - padding.bottom, padding.top])
+		.domain([0, d3.max(donepoints)])
+		.range([height - padding.bottom, padding.top])
 
-	predictionScale = d3.scale.linear()
-	predictionScale.domain([0, sprintData.donePointsPerDay.length-1])
-	predictionScale.range([0, sprintData.pointVolume])
-
-	predictionLine = d3.svg.line()
-	predictionLine.x (d,i)=>
-		timeScale(sprintData.start.addDays(i))
-	predictionLine.y (d,i)=>
-		pointScale(Math.floor(predictionScale(i)))
-	predictionLine.interpolate('monotone')
+	# predictionScale = d3.scale.linear()
+	# predictionScale.domain([0, sprintData.donePointsPerDay.length-1])
+	# predictionScale.range([0, sprintData.pointVolume])
 
 	# -- prediction
-	canvas.append('path')
-		.attr("class", "prediction")
-		.attr("d", predictionLine(sprintData.donePointsPerDay))
-		# .attr("x1", timeScale(sprintData.start))
-		# .attr("y1", pointScale(0))
-		# .attr("x2", timeScale(sprintData.end))
-		# .attr("y2", pointScale(sprintData.pointVolume))
+	# predictionLine = d3.svg.line()
+	# predictionLine.x (d,i)=>
+	# 	timeScale(start.addDays(i))
+	# predictionLine.y (d,i)=>
+	# 	pointScale(Math.floor(predictionScale(i)))
+	# predictionLine.interpolate('monotone')
+
+	# canvas.append('path')
+	# 	.attr("class", "prediction")
+	# 	.attr("d", predictionLine(sprintData.donePointsPerDay))
 
 	# -- points
 	progressLine = d3.svg.line()
-	progressLine.x (d,i)=>
-		timeScale(sprintData.start.addDays(i))
-	progressLine.y (d,i)=>
-		pointScale(d)
-	progressLine.interpolate("monotone")
+	
+	progressLine.x (day)=>
+		timeScale(day.date)
+
+	progressLine.y (day)=>
+		pointScale(day.totalpoints)
+
+	# progressLine.interpolate("monotone")
 
 	canvas.append("path")
-		.attr("d", progressLine(sprintData.donePointsPerDay))
+		.attr("d", progressLine(daysWorkedOn))
 		.attr("class", "progress_line")
 
-	points = canvas.selectAll("circle").data(sprintData.donePointsPerDay)
+	points = canvas.selectAll("circle").data(daysWorkedOn)
 	points.enter().append('circle')
 		.attr("class", "data_point")
 		.attr("r", 4)
-		.attr("cx", (d,i)=>
-			timeScale(sprintData.start.addDays(i))
+		.attr("cx", (day)=>
+			timeScale(day.date)
 		)
-		.attr("cy", (d,i)=>
-			pointScale(d)
+		.attr("cy", (day)=>
+			pointScale(day.totalpoints)
 		)
-		.style("fill", (d,i)=>
-			if(d < Math.floor(predictionScale(i)))
-				return "red"
-			else
-				return "green"
-		)
+		# .style("fill", (day)=>
+		# 	if(d < Math.floor(predictionScale(i)))
+		# 		return "red"
+		# 	else
+		# 		return "green"
+		# )
 
 	# -- setup axis
 	xAxis = d3.svg.axis().orient("bottom").scale(timeScale)

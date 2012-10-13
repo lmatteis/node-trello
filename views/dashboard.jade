@@ -8,10 +8,12 @@ html
     link(rel='stylesheet', href='/stylesheets/burnup-chart.css')
     script(src='javascripts/jquery.dev.js')
     script(src='javascripts/d3.js')
-    script(src='javascripts/burnup-chart.js')
+    script(src='javascripts/compiled/burnup-chart.js')
     script(src='https://api.trello.com/1/client.js?key=#{api_key}')
-    script(src='javascripts/dashboard.js')
+    script(src='javascripts/compiled/dashboard.js')
   body
+
+    div#burnup_charts
 
     div.box
         h2 Team404
