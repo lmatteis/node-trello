@@ -1,0 +1,27 @@
+.data_point {
+	fill: blue;
+}
+
+.axis path,
+.axis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.axis text {
+	font-family:  sans-serif;
+	font-size: 11px;
+}
+
+.prediction {
+	stroke:lightblue;
+	stroke-width: 2;
+	fill:none;
+}
+
+.progress_line {
+	stroke:blue;
+	stroke-width: 2;
+	fill: none;
+}
