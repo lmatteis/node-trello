@@ -1,0 +1,14 @@
+.box {
+	margin: 1px 10px;
+	margin-bottom: 30px;
+	padding: 2px;
+}
+
+.box h2 {
+	background: #EEE;
+	padding: 0px 7px;
+}
+
+.box svg {
+	margin: 15px 0px;
+}
