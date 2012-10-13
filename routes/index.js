@@ -1,6 +1,6 @@
 var stats = require('../lib/stats'),
   config = require('../config'),
-  sprint = require('../lib/sprint'),
+  sprints = require('../lib/sprints'),
  	csv = require('../lib/csv');
 
 exports.index = function(req, res){
@@ -11,7 +11,7 @@ exports.index = function(req, res){
 exports.api = function(req, res){
   res.set('Content-Type', 'text/json');
   var boardid = req.query.boardid;
-  sprint.getsprints(config.api_key, config.api_token, boardid, function(err, data) {
+  sprints.getsprints(config.api_key, config.api_token, boardid, function(err, data) {
     if(err) {
       res.statusCode = 500;
       res.end(err.message)
