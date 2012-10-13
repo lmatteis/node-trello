@@ -1,5 +1,6 @@
 var stats = require('../lib/stats'),
   config = require('../config'),
+  sprint = require('../lib/sprint'),
  	csv = require('../lib/csv');
 
 exports.index = function(req, res){
@@ -11,23 +12,15 @@ exports.api = function(req, res){
   res.set('Content-Type', 'text/json');
   var team = req.query.team;
 
-  var dummy = {
-    'title': 'Aktueller Sprint von Team ' + team,
-    'days' : [
-       {'day': new Date('2012','12', '11'), 'totalpoints':10 , 'donepoints':0 },
-       {'day': new Date('2012','12', '12'), 'totalpoints':10 , 'donepoints':2 },
-       {'day': new Date('2012','12', '13'), 'totalpoints':10 , 'donepoints':5 },
-       {'day': new Date('2012','12', '14'), 'totalpoints':10 , 'donepoints':5 },
-       {'day': new Date('2012','12', '15'), 'totalpoints':11 , 'donepoints':8 },
-       {'day': new Date('2012','12', '16') },
-       {'day': new Date('2012','12', '17') },
-       {'day': new Date('2012','12', '18') },
-       {'day': new Date('2012','12', '19') },
-       {'day': new Date('2012','12', '10') },
-    ]
-  }
-  res.write(JSON.stringify(dummy));
-  res.end();
+  sprint.getsprints(config.api_key, config.api_token, '4f681edb801cba2d41140478', function(err, data) {
+    if(err) {
+      res.statusCode = 500;
+      res.end(err.message)
+    } else {
+      res.end(JSON.stringify(data));      
+    }
+  })
+
 };
 
 exports.stats = function(req, res){
