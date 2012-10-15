@@ -7,6 +7,10 @@ describe('sprint', function(){
     expect(sprint.asArray().length).toEqual(9);
   });
 
+  it('should return start and enddate', function(){
+    expect(sprint.startDate().toString()).toEqual(new Date(2012, 01, 02).toString());
+    expect(sprint.endDate().toString()).toEqual(new Date(2012, 01, 10).toString());
+  });
 
   it('should contain data for the dates', function(){
     expect(sprint.get(new Date(2012, 01, 02))).toEqual({ totalpoints : 0, donepoints : 0 } );
@@ -43,6 +47,8 @@ describe('sprint', function(){
     expect(sprint.get(new Date(2012, 01, 08))).toEqual({ totalpoints : 2, donepoints : 2 } );
     expect(sprint.get(new Date(2012, 01, 09))).toEqual({ totalpoints : 2, donepoints : 2 } );
   });
+
+
 
 
 
