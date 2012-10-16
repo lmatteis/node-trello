@@ -4,7 +4,11 @@ sprint_board = require('../lib/sprint_board'),
 	  csv = require('../lib/csv');
 
 exports.index = function(req, res){
-	res.render('index', { title: 'Express' })
+	res.render('index')
+};
+
+exports.burndown = function(req, res){
+	res.render('burndown')
 };
 
 exports.api = function(req, res){

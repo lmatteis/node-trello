@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  .container
+    .row
+      .hero-unit
+        p Burndowns
+        script(src="https://www.google.com/jsapi")
+        script
+            google.load("visualization", "1", {packages:["corechart"]});
+            google.setOnLoadCallback(function() {
+                drawChart('4f05b23a7bd9872d743ece95', '404');
+                drawChart('4f681edb801cba2d41140478', 'ateam');
+                drawChart('50350ea44ac40fb64b0044f4', 'xxx');
+            });
+            function drawChart(boardid, title) {
+                var jsonData = $.ajax({
+                    url: "api?boardid=" + boardid,
+                    dataType:"json",
+                    async: false
+                }).responseText;
+
+                var data = new google.visualization.DataTable(jsonData);
+
+                console.log(jsonData);
+
+                var options = {
+                    title: title,
+                    pointSize: 5
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart_div_' + title));
+                chart.draw(data, options);
+            }
+        #chart_div_404(style="width: 900px; height: 500px")
+        #chart_div_ateam(style="width: 900px; height: 500px")
+        #chart_div_xxx(style="width: 900px; height: 500px")
+
