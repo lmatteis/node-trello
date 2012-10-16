@@ -21,20 +21,24 @@ exports.api = function(req, res){
 };
 
 exports.stats = function(req, res){
-	var boards = [{ board_id: req.query.board_id }];
-	stats.createStats(config.api_key, config.api_token, boards, function(data) {
-	//to array
-	var array = [];
-	data.forEach(function(item) {
-		var item2 = [];
-		for(key in item) {
-			item2.push(item[key] + "")
-		}
-		array.push(item2);
-	});
+	if(req.query.board_id) {
+		var boards = [{ board_id: req.query.board_id }];
+		stats.createStats(config.api_key, config.api_token, boards, function(data) {
+			//to array
+			var array = [];
+			data.forEach(function(item) {
+				var item2 = [];
+				for(key in item) {
+					item2.push(item[key] + "")
+				}
+				array.push(item2);
+			});
 
-	res.render('stats', {'data': JSON.stringify(array)})
-  })
+			res.render('stats', {'data': JSON.stringify(array)})
+ 		});
+	} else {
+		res.render('stats', {'data': JSON.stringify([])})		
+	}
 };
 
 exports.statscsv = function(request, response) {

@@ -1,47 +1,46 @@
-!!!
-html
-  head
-    title= 'title'
-    link(rel='stylesheet', href='/libs/bootstrap/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/libs/bootstrap/css/bootstrap-responsive.min.css')
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
+extends layout
 
-    .navbar.navbar-fixed-top
-      .navbar-inner
-        .container
-          .brand Trello Stats
+block content
 
-    .container
-      .row
-        .hero-unit
-          #table_div
+  .container
+    .row
+      .hero-unit
+        a.btn(href="statscsv?board_id=50350ea44ac40fb64b0044f4") Download xXx stats as CSV
+        a.btn(href="stats?board_id=50350ea44ac40fb64b0044f4") View xXx stats
+        br
+        a.btn(href="statscsv?board_id=4f681edb801cba2d41140478") Download A-Team stats as CSV
+        a.btn(href="stats?board_id=4f681edb801cba2d41140478") View A-Team stats
+        br
+        a.btn(href="statscsv?board_id=4f05b23a7bd9872d743ece95") Download Team-404 stats as CSV
+        a.btn(href="stats?board_id=4f05b23a7bd9872d743ece95") View Team-404 stats
 
-    script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js")
-    script(src="/libs/bootstrap/js/bootstrap.min.js")
-    script(src="/libs/sugarjs/sugar.min.js")
-    script(src="https://www.google.com/jsapi")
-    script
-      var data = !{data};
-    script
-      google.load('visualization', '1', {packages:['table']});
-      google.setOnLoadCallback(drawTable);
-      function drawTable() {
-        //FIX ME
-        var dt = new google.visualization.DataTable();
-        dt.addColumn('string', 'working_hours');
-        dt.addColumn('string', 'finished');
-        dt.addColumn('string', 'started');
-        dt.addColumn('string', 'label');
-        dt.addColumn('string', 'versions');
-        dt.addColumn('string', 'sprint_range');
-        dt.addColumn('string', 'estimate');
-        dt.addColumn('string', 'card_name');
-        dt.addColumn('string', 'list_name');
-        dt.addColumn('string', 'card_id');
-        dt.addColumn('string', 'member');
-        dt.addRows(data);
+        #table_div
 
-        var table = new google.visualization.Table(document.getElementById('table_div'));
-        table.draw(dt, {showRowNumber: true});
-      }
+  script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js")
+  script(src="/libs/bootstrap/js/bootstrap.min.js")
+  script(src="/libs/sugarjs/sugar.min.js")
+  script(src="https://www.google.com/jsapi")
+  script
+    var data = !{data};
+  script
+    google.load('visualization', '1', {packages:['table']});
+    google.setOnLoadCallback(drawTable);
+    function drawTable() {
+      //FIX ME
+      var dt = new google.visualization.DataTable();
+      dt.addColumn('string', 'working_hours');
+      dt.addColumn('string', 'finished');
+      dt.addColumn('string', 'started');
+      dt.addColumn('string', 'label');
+      dt.addColumn('string', 'versions');
+      dt.addColumn('string', 'sprint_range');
+      dt.addColumn('string', 'estimate');
+      dt.addColumn('string', 'card_name');
+      dt.addColumn('string', 'list_name');
+      dt.addColumn('string', 'card_id');
+      dt.addColumn('string', 'member');
+      dt.addRows(data);
+
+      var table = new google.visualization.Table(document.getElementById('table_div'));
+      table.draw(dt, {showRowNumber: true});
+    }
