@@ -14,25 +14,26 @@ block content
                 drawChart('50350ea44ac40fb64b0044f4', 'xxx');
             });
             function drawChart(boardid, title) {
-                var jsonData = $.ajax({
+                $.ajax({
                     url: "api?boardid=" + boardid,
                     dataType:"json",
-                    async: false
-                }).responseText;
+                    async: true
+                }).done(function(jsonData) {
+                    var data = new google.visualization.DataTable(jsonData);
 
-                var data = new google.visualization.DataTable(jsonData);
+                    console.log(jsonData);
 
-                console.log(jsonData);
+                    var options = {
+                        title: title,
+                        pointSize: 5
+                    };
 
-                var options = {
-                    title: title,
-                    pointSize: 5
-                };
+                    var chart = new google.visualization.LineChart(document.getElementById('chart_div_' + title));
+                    chart.draw(data, options);
 
-                var chart = new google.visualization.LineChart(document.getElementById('chart_div_' + title));
-                chart.draw(data, options);
+                });
+
             }
-        #chart_div_404(style="width: 900px; height: 500px")
-        #chart_div_ateam(style="width: 900px; height: 500px")
-        #chart_div_xxx(style="width: 900px; height: 500px")
-
+        #chart_div_404(style="width: 900px; height: 500px; background-image:url('progress.gif'); background-repeat:no-repeat; background-position:center center;")
+        #chart_div_ateam(style="width: 900px; height: 500px; background-image:url('progress.gif'); background-repeat:no-repeat; background-position:center center;")
+        #chart_div_xxx(style="width: 900px; height: 500px; background-image:url('progress.gif'); background-repeat:no-repeat; background-position:center center;")
