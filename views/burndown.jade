@@ -4,7 +4,7 @@ block content
   .container
     .row
       .hero-unit
-        p Burndowns
+        h2 Sprint Burndowns
         script(src="https://www.google.com/jsapi")
         script
             google.load("visualization", "1", {packages:["corechart"]});
@@ -20,8 +20,6 @@ block content
                     async: true
                 }).done(function(jsonData) {
                     var data = new google.visualization.DataTable(jsonData);
-
-                    console.log(jsonData);
 
                     var options = {
                         title: title,
