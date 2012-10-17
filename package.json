@@ -1,6 +1,11 @@
-{ "name": "trello-stats"
+{ 
+  "name": "trello-stats"
 , "description": "Get card statistics from Trello based on naming conventions and card data"
-, "main": "./backup.js"
+, "main": "./main.js"
+, "scripts": {
+    "test": "node_modules/jasmine-node/bin/jasmine-node spec"
+}
+, "test": "./run_jasmine"
 , "author": "Matthias Luebken"
 , "version": "0.0.1"
 , "repository" :
