@@ -17,7 +17,7 @@ exports.api = function(req, res){
 	sprint_board.query_sprints(config.api_key, config.api_token, boardid, function(err, data) {
 		if(err) {
 			res.statusCode = 500;
-			res.end(err.message)
+			res.end(err.toString())
 		} else {
 			res.end(JSON.stringify(data));
 		}

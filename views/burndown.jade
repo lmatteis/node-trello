@@ -29,6 +29,12 @@ block content
                     var chart = new google.visualization.LineChart(document.getElementById('chart_div_' + title));
                     chart.draw(data, options);
 
+                }).error(function(data) {
+                    $('#chart_div_404').css('background-image', '');
+                    $('#chart_div_ateam').css('background-image', '');
+                    $('#chart_div_xxx').css('background-image', '');
+                    $('#chart_div_404').text(data.statusText + ' ' + data.responseText);
+                    console.log(data)
                 });
 
             }
