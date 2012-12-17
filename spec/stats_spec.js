@@ -56,7 +56,7 @@ describe('appendDateAndVersionFromListTitle', function() {
 	it('should append date', function(done) {
 		sts.appendDateAndVersionFromListTitle(data, function(error, newData) {
 			expect(newData.length).toEqual(1);
-			expect(newData[0].sprint_range).toEqual('2012-10-10--2020-09-09');
+			expect(newData[0].sprint_end).toEqual(new Date(2020, 09-1, 09));
 			expect(newData[0].versions).toEqual('v.23.platform');
 			done();
 		})
