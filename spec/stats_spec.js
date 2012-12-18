@@ -90,6 +90,34 @@ describe('appendLabelInfosAndFeatureAreas', function () {
 */
 });
 
+describe('appendMemberToCardActions added and removed', function() {
+	var dateAdded = new Date(2012, 01, 01);
+	var dummyApi = {
+		get:function(path, filter, callback) {
+			var actions = [
+				{ 
+					member: { id : '123', fullName: 'Ghetto Mattes'}, 
+				  	type: 'addMemberToCard', 
+				  	date: dateAdded 
+				}
+				];
+			callback(null, actions);
+		}
+	};
+	var sts = SandboxedModule.require('../lib/stats', { locals: {api: dummyApi} });
+	var data = [{card_id : 123}];
+
+	it('should append member names', function(done) {
+		sts.appendMemberToCardActions(data, function(error, newData) {
+			expect(newData.length).toEqual(1);
+			var card = newData[0];
+			expect(card.member).toEqual('Ghetto Mattes');
+			expect(card.member_added.toString()).toEqual(dateAdded.toString()) //why over toString?
+			done();
+		})
+	})
+});
+
 //TODO weiter ausbauen
 describe('appendStartAndDone', function() {
 	var dummyApi = {
