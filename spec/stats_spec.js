@@ -152,32 +152,3 @@ describe('calculateWorkingHours', function() {
 		});
 
 });
-
-/*
-describe('duplicateEntryForEachMember', function(){
-	var sts = require('../lib/stats');
-	var data = [{card_id: '123', member_names : ['matt', 'dave']}];
-
-	it('should duplicate an entry with two members assigned', function(done){
-		sts.duplicateEntryForEachMember(data, function(error, newData) {
-			expect(newData.length).toEqual(2);
-			expect(newData[0].member).toEqual('matt');
-			expect(newData[0].card_id).toEqual('123');
-			expect(newData[1].member).toEqual('dave');
-			expect(newData[1].card_id).toEqual('123');
-			done();
-		});
-	});
-
-	var data2 = [{card_id: '123', member_names : []}];
-	it('should keep an entry with no members assigned', function(done){
-		sts.duplicateEntryForEachMember(data2, function(error, newData) {
-			expect(newData.length).toEqual(1);
-			expect(newData[0].member).toEqual('<unknown>');
-			expect(newData[0].card_id).toEqual('123');
-			done();
-		});
-	});
-});
-*/
-
