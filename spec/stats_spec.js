@@ -67,12 +67,12 @@ describe('appendDateAndVersionFromListTitle', function() {
 describe('appendLabelInfosAndFeatureAreas', function () {
 	var dummyApi = {
 		get:function(path, callback) {
-			var card = {name: 'a first board name', id: 123, labels: [{name:'a label'}, {name:'a 2nd label'}], desc: 'This is a description. FeatureArea:anarea '};
+			var card = {labels: [{name:'a label'}, {name:'a 2nd label'}]};
 			callback(null, card);          
 		}
 	};
 	var sts = SandboxedModule.require('../lib/stats', { locals: {api: dummyApi} });
-	var data = [{card_id: '123'}];
+	var data = [{card_id: '123', card_name: 'A card name'}];
 
 	it('should append labels', function (done) {
 		sts.appendLabelInfosAndFeatureAreas(data, function(error, newData) {
@@ -105,7 +105,7 @@ describe('appendMemberToCardActions added and removed', function() {
 		}
 	};
 	var sts = SandboxedModule.require('../lib/stats', { locals: {api: dummyApi} });
-	var data = [{card_id : 123}];
+	var data = [{card_id : 123, notes: []}];
 
 	it('should append member names', function(done) {
 		sts.appendMemberToCardActions(data, function(error, newData) {
