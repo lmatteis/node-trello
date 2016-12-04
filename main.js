@@ -7,6 +7,10 @@ var trello = function(key, token) {
   this.host = "api.trello.com";
 };
 
+trello.prototype.setToken(newToken) {
+  this.token = newToken;
+}
+
 trello.prototype.invokeGeneric = function(method, apiCall, args, callback) {
   if (!callback) {
     // allow args to be optional and callback passed in its position.
